@@ -1,7 +1,9 @@
 from flask import Flask, jsonify, render_template
 from Delta import main
+from flask_cors import CORS
 
 app = Flask(__name__)
+CORS(app)  # 啟用全局 CORS
 
 @app.route('/')
 def home():

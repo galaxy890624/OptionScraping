@@ -36,9 +36,10 @@
             },
             methods: {
                 fetchDeltaData() {
-                    fetch('http://127.0.0.1:5000/api/deltas')
+                    fetch('http://127.0.0.1:5000/api/deltas',  { mode: 'cors' })
                         .then(response => response.json())
                         .then(data => {
+                            console.log(data);  // 查看返回的數據
                             this.options = data;
                         })
                         .catch(error => {
