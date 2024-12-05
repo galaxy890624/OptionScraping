@@ -36,7 +36,7 @@
             },
             methods: {
                 fetchDeltaData() {
-                    fetch('http://127.0.0.1:5000/api/delta')
+                    fetch('http://127.0.0.1:5000/api/deltas')
                         .then(response => response.json())
                         .then(data => {
                             this.options = data;
