@@ -52,7 +52,7 @@ def fetch_options_data():
 
     return df
 
-# 爬取台指期的資料
+# spot_price 爬取台指期的資料
 def get_spot_price_taifex():
     url = "https://mis.taifex.com.tw/futures/api/getQuoteList"
     payload = {"MarketType":"0",
