@@ -7,7 +7,7 @@ CORS(app)  # 啟用全局 CORS
 
 @app.route('/')
 def home():
-    return render_template("Index.html")  # 前端頁面
+    return render_template("Index.html", options=get_options_data) # 前端頁面 這裡的 options 是傳遞給模板的變數，對應的應是你的選擇權數據。
 
 @app.route('/api/deltas', methods=['GET'])
 def get_options_data():

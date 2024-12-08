@@ -17,12 +17,13 @@
                 <th>最新成交價</th>
                 <th>Delta</th>
             </tr>
-            <tr v-for="option in options" :key="option.商品名稱">
-                <td>{{ option.商品名稱 }}</td>
-                <td>{{ option.履約價 }}</td>
-                <td>{{ option.買賣權 }}</td>
-                <td>{{ option.最新成交價 }}</td>
-                <td>{{ option.Delta }}</td>
+            <!-- 原本的名稱 option -->
+            <tr v-for="option in options" :key="options.商品名稱"> 
+                <td>{{ options.商品名稱 }}</td>
+                <td>{{ options.履約價 }}</td>
+                <td>{{ options.買賣權 }}</td>
+                <td>{{ options.最新成交價 }}</td>
+                <td>{{ options.Delta }}</td>
             </tr>
         </table>
         <button @click="fetchDeltaData">更新數據</button>
