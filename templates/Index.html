@@ -3,80 +3,54 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>選擇權即時報價查詢</title>
-    <script>
-        async function fetchOptionsData() {
-            const riskFreeRate = document.getElementById('risk_free_rate').value || 0.02;
-            const volatility = document.getElementById('volatility').value || 0.25;
-            const timeToMaturityDays = document.getElementById('time_to_maturity_days').value || 7;
-
-            const url = `/api/deltas?risk_free_rate=${riskFreeRate}&volatility=${volatility}&time_to_maturity_days=${timeToMaturityDays}`;
-            
-            try {
-                const response = await fetch(url);
-                const result = await response.json();
-                if (result.status === 'success') {
-                    displayData(result.data);
-                } else {
-                    alert(`Error: ${result.message}`);
-                }
-            } catch (err) {
-                console.error(err);
-                alert('無法獲取數據，請檢查伺服器是否正常運行');
-            }
-        }
-
-        function displayData(data) {
-            const table = document.getElementById('options_table');
-            table.innerHTML = `
-                <tr>
-                    <th>商品名稱</th>
-                    <th>履約價</th>
-                    <th>買賣權</th>
-                    <th>買進價格</th>
-                    <th>賣出價格</th>
-                    <th>最新成交價</th>
-                    <th>最新交易時間</th>
-                    <th>Delta</th>
-                </tr>
-            `;
-            data.forEach(item => {
-                const row = `
-                    <tr>
-                        <td>${item['商品名稱']}</td>
-                        <td>${item['履約價']}</td>
-                        <td>${item['買賣權']}</td>
-                        <td>${item['買進價格']}</td>
-                        <td>${item['賣出價格']}</td>
-                        <td>${item['最新成交價']}</td>
-                        <td>${item['最新交易時間']}</td>
-                        <td>${item['Delta'].toFixed(4)}</td>
-                    </tr>
-                `;
-                table.innerHTML += row;
-            });
-        }
-    </script>
+    <title>選擇權 Delta 即時顯示</title>
+    <script src="https://cdn.jsdelivr.net/npm/vue@2"></script>
 </head>
 <body>
-    <h1>選擇權即時報價查詢</h1>
-    <div>
-        <label>無風險利率: <input id="risk_free_rate" type="number" step="0.01" placeholder="0.02"></label>
-        <label>波動率: <input id="volatility" type="number" step="0.01" placeholder="0.25"></label>
-        <label>到期時間 (天): <input id="time_to_maturity_days" type="number" placeholder="7"></label>
-        <button onclick="fetchOptionsData()">查詢</button>
+    <div id="app">
+        <h1>選擇權 Delta 值</h1>
+        <table border="1">
+            <tr>
+                <th>商品名稱</th>
+                <th>履約價</th>
+                <th>買賣權</th>
+                <th>最新成交價</th>
+                <th>Delta</th>
+            </tr>
+            <tr v-for="option in options" :key="option.商品名稱">
+                <td>{{ option.商品名稱 }}</td>
+                <td>{{ option.履約價 }}</td>
+                <td>{{ option.買賣權 }}</td>
+                <td>{{ option.最新成交價 }}</td>
+                <td>{{ option.Delta }}</td>
+            </tr>
+        </table>
+        <button @click="fetchDeltaData">更新數據</button>
     </div>
-    <table id="options_table" border="1">
-        <tr>
-            <th>商品名稱</th>
-            <th>履約價</th>
-            <th>買賣權</th>
-            <th>買進價格</th>
-            <th>賣出價格</th>
-            <th>最新成交價</th>
-            <th>最新交易時間</th>
-            <th>Delta</th>
-        </tr>
-    </table>
+
+    <script>
+        new Vue({
+            el: '#app',
+            data: {
+                options: []  // 儲存選擇權資料
+            },
+            methods: {
+                fetchDeltaData() {
+                    fetch('http://127.0.0.1:5000/api/deltas',  { mode: 'cors' })
+                        .then(response => response.json())
+                        .then(data => {
+                            console.log(data);  // 查看返回的數據
+                            this.options = data;
+                        })
+                        .catch(error => {
+                            console.error("錯誤:", error);
+                        });
+                }
+            },
+            created() {
+                this.fetchDeltaData();  // 頁面加載時獲取數據
+            }
+        });
+    </script>
 </body>
 </html>

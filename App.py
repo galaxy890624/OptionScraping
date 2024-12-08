@@ -1,7 +1,13 @@
-from flask import Flask, jsonify, request
+from flask import Flask, jsonify, request, render_template
 from Delta import fetch_options_data, calculate_delta, get_spot_price_taifex
+from flask_cors import CORS
 
 app = Flask(__name__)
+CORS(app)  # 啟用全局 CORS
+
+@app.route('/')
+def home():
+    return render_template("Index.html")  # 前端頁面
 
 @app.route('/api/deltas', methods=['GET'])
 def get_options_data():
