@@ -7,44 +7,82 @@
     <style>
         body {
             font-family: Arial, sans-serif;
-            margin: 20px;
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(135deg, #e8f5ff, #d0e8ff);
+        }
+        header {
+            background: #007BFF;
+            color: white;
+            padding: 20px;
+            text-align: center;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
         }
         h1 {
-            text-align: center;
-        }
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 20px;
-        }
-        th, td {
-            border: 1px solid #ccc;
-            padding: 10px;
-            text-align: center;
-        }
-        th {
-            background-color: #f4f4f4;
-        }
-        tr:nth-child(even) {
-            background-color: #f9f9f9;
+            margin: 0;
+            font-size: 24px;
         }
         button {
-            margin: 20px 0;
+            margin: 20px auto;
+            display: block;
             padding: 10px 20px;
             font-size: 16px;
             cursor: pointer;
-            background-color: #007BFF;
+            background: linear-gradient(45deg, #007BFF, #0056b3);
             color: white;
             border: none;
             border-radius: 5px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transition: transform 0.2s, background 0.3s;
         }
         button:hover {
-            background-color: #0056b3;
+            background: linear-gradient(45deg, #0056b3, #003580);
+            transform: scale(1.05);
+        }
+        button:active {
+            transform: scale(0.95);
+        }
+        table {
+            width: 90%;
+            margin: 20px auto;
+            border-collapse: collapse;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 12px;
+            text-align: center;
+        }
+        th {
+            background: #007BFF;
+            color: white;
+            font-weight: bold;
+        }
+        tr:nth-child(even) {
+            background: #f9f9f9;
+        }
+        tr:hover {
+            background: #f1f1f1;
+            cursor: pointer;
+        }
+        #loading {
+            display: none;
+            text-align: center;
+            margin: 20px 0;
+        }
+        #loading img {
+            width: 50px;
         }
     </style>
 </head>
 <body>
-    <h1>選擇權即時報價查詢</h1>
+    <header>
+        <h1>選擇權即時報價查詢</h1>
+    </header>
+    <div id="loading">
+        <img src="https://i.gifer.com/ZZ5H.gif" alt="Loading...">
+        <p>數據正在更新...</p>
+    </div>
     <button id="refreshButton">刷新資料</button>
     <table>
         <thead>
@@ -63,17 +101,16 @@
             <!-- 資料將由 JavaScript 動態插入 -->
         </tbody>
     </table>
-
     <script>
         // 獲取數據並更新表格
         async function fetchAndUpdateData() {
+            const loading = document.getElementById('loading');
+            const tableBody = document.getElementById('dataTable');
             try {
+                loading.style.display = 'block'; // 顯示加載動畫
+                tableBody.innerHTML = ""; // 清空舊數據
                 const response = await fetch('/api/options');
                 const data = await response.json();
-
-                const tableBody = document.getElementById('dataTable');
-                tableBody.innerHTML = ""; // 清空舊數據
-
                 data.forEach(option => {
                     const row = document.createElement('tr');
                     row.innerHTML = `
@@ -91,6 +128,8 @@
             } catch (error) {
                 console.error("Error fetching data:", error);
                 alert("無法獲取數據，請稍後再試！");
+            } finally {
+                loading.style.display = 'none'; // 隱藏加載動畫
             }
         }
 
