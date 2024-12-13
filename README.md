@@ -1,6 +1,7 @@
 # OptionScraping
  
 Web: http://127.0.0.1:5000/
+
 Data: http://127.0.0.1:5000/api/options
 
 # How to work
