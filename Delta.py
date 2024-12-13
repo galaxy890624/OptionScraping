@@ -3,6 +3,7 @@ import requests as r
 import pandas as pd
 from math import log, sqrt # log 是以e為底
 from scipy.stats import norm
+from datetime import datetime
 
 # Black-Scholes 模型計算 Delta 的函數
 # spot_price = 即時價格
@@ -50,7 +51,25 @@ def fetch_options_data():
     df = df[["DispCName", "StrikePrice", "CP", "CBidPrice1", "CAskPrice1", "CLastPrice", "CTime"]]
     df.columns = ["商品名稱", "履約價", "買賣權", "買進價格", "賣出價格", "最新成交價", "最新交易時間"]
 
+    # 將 "CTime" 轉換為 64 位格式
+    df["最新交易時間64位"] = df.apply(convert_to_custom_timestamp, axis=1)
+
     return df
+
+# 將 CTime 轉換為 YYYYMMDDHHMMSS 格式
+def convert_to_custom_timestamp(row):
+    time_str = row["最新交易時間"]
+    if not time_str or len(time_str) != 6:
+        return ""  # 如果時間無效，返回空值
+    
+    hours = int(time_str[:2])
+    minutes = int(time_str[2:4])
+    seconds = int(time_str[4:6])
+
+    # 獲取當前日期並組合
+    today = datetime.today()
+    formatted = f"{today.year}/{today.month:02}/{today.day:02} {hours:02}:{minutes:02}:{seconds:02}"
+    return formatted
 
 # spot_price 爬取台指期的資料
 def get_spot_price_taifex():
