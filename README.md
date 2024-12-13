@@ -8,3 +8,7 @@ Data: http://127.0.0.1:5000/api/options
 1. Run "..\App.py"
 2. http://127.0.0.1:5000/
 3. Press "刷新資料" button
+
+# To do list
+1. 剩餘時間
+2. 波動率 資料來源 https://mis.taifex.com.tw/futures/VolatilityQuotes/
