@@ -3,55 +3,102 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>選擇權 Delta 即時顯示</title>
-    <script src="https://cdn.jsdelivr.net/npm/vue@2"></script>
+    <title>選擇權即時報價查詢</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        h1 {
+            text-align: center;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        th, td {
+            border: 1px solid #ccc;
+            padding: 10px;
+            text-align: center;
+        }
+        th {
+            background-color: #f4f4f4;
+        }
+        tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+        button {
+            margin: 20px 0;
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            border-radius: 5px;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+    </style>
 </head>
 <body>
-    <div id="app">
-        <h1>選擇權 Delta 值</h1>
-        <table border="1">
+    <h1>選擇權即時報價查詢</h1>
+    <button id="refreshButton">刷新資料</button>
+    <table>
+        <thead>
             <tr>
                 <th>商品名稱</th>
                 <th>履約價</th>
                 <th>買賣權</th>
+                <th>買進價格</th>
+                <th>賣出價格</th>
                 <th>最新成交價</th>
+                <th>最新交易時間</th>
                 <th>Delta</th>
             </tr>
-            <!-- 原本的名稱 option -->
-            <tr v-for="option in options" :key="options.商品名稱"> 
-                <td>{{ options.商品名稱 }}</td>
-                <td>{{ options.履約價 }}</td>
-                <td>{{ options.買賣權 }}</td>
-                <td>{{ options.最新成交價 }}</td>
-                <td>{{ options.Delta }}</td>
-            </tr>
-        </table>
-        <button @click="fetchDeltaData">更新數據</button>
-    </div>
+        </thead>
+        <tbody id="dataTable">
+            <!-- 資料將由 JavaScript 動態插入 -->
+        </tbody>
+    </table>
 
     <script>
-        new Vue({
-            el: '#app',
-            data: {
-                options: []  // 儲存選擇權資料
-            },
-            methods: {
-                fetchDeltaData() {
-                    fetch('http://127.0.0.1:5000/api/deltas',  { mode: 'cors' })
-                        .then(response => response.json())
-                        .then(data => {
-                            console.log(data);  // 查看返回的數據
-                            this.options = data;
-                        })
-                        .catch(error => {
-                            console.error("錯誤:", error);
-                        });
-                }
-            },
-            created() {
-                this.fetchDeltaData();  // 頁面加載時獲取數據
+        // 獲取數據並更新表格
+        async function fetchAndUpdateData() {
+            try {
+                const response = await fetch('/api/options');
+                const data = await response.json();
+
+                const tableBody = document.getElementById('dataTable');
+                tableBody.innerHTML = ""; // 清空舊數據
+
+                data.forEach(option => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${option["商品名稱"]}</td>
+                        <td>${option["履約價"]}</td>
+                        <td>${option["買賣權"]}</td>
+                        <td>${option["買進價格"] || "-"}</td>
+                        <td>${option["賣出價格"] || "-"}</td>
+                        <td>${option["最新成交價"] || "-"}</td>
+                        <td>${option["最新交易時間"] || "-"}</td>
+                        <td>${option["Delta"]}</td>
+                    `;
+                    tableBody.appendChild(row);
+                });
+            } catch (error) {
+                console.error("Error fetching data:", error);
+                alert("無法獲取數據，請稍後再試！");
             }
-        });
+        }
+
+        // 初次加載數據
+        fetchAndUpdateData();
+
+        // 點擊按鈕刷新數據
+        document.getElementById('refreshButton').addEventListener('click', fetchAndUpdateData);
     </script>
 </body>
 </html>

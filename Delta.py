@@ -30,7 +30,7 @@ def fetch_options_data():
         "SymbolType": "O",
         "KindID": "1",
         "CID": "TXO",
-        "ExpireMonth": "202412W2",  # 替換為你需要的到期月份 格式 = 202406W4(for週選); 202407(for月選)
+        "ExpireMonth": "202412",  # 替換為你需要的到期月份 格式 = 202406W4(for週選); 202407(for月選)
         "RowSize": "全部",
         "PageNo": "",
         "SortColumn": "",
