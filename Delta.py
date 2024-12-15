@@ -38,7 +38,7 @@ def get_last_trading_day(current_date):
     elif current_date.weekday() == 6:  # 週日
         return current_date - timedelta(days=2)
     # 若是週一凌晨，返回上週五
-    elif current_date.weekday() == 0 and current_date.hour < 6:  # 週一且時間在 0:00~05:00
+    elif current_date.weekday() == 0 and current_date.hour < 6 and current_date:  # 週一且時間在 0:00~05:00
         return current_date - timedelta(days=3)
     # 其他情況
     else:
@@ -61,9 +61,9 @@ def convert_to_custom_timestamp(row):
     system_time = datetime.now().time() # 格式 = 03:58:47.445722
 
     # 基於 system_time 判斷交易日期
-    if system_time >= time(15, 0):  # 下午盤後交易
+    if system_time >= time(13, 45):  # 下午盤後交易
         trade_date = get_last_trading_day(system_today.date())
-    elif system_time <= time(5, 0):  # 凌晨盤後交易
+    elif system_time <= time(8, 45):  # 凌晨盤後交易
         trade_date = get_last_trading_day((system_today - timedelta(days=1)).date())
     else:  # 日間交易
         trade_date = system_today.date()

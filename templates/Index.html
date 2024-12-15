@@ -122,7 +122,7 @@
                         <td>${option["最新成交價"] || "-"}</td>
                         <td>${option["最新交易時間64位"] || "-"}</td>
                         <td>${option["Delta"]}</td>
-                    `;
+                    `; // 如果沒有資料時 回傳 "-"
                     tableBody.appendChild(row);
                 });
             } catch (error) {
