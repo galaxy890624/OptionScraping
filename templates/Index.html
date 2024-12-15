@@ -78,6 +78,7 @@
 <body>
     <header>
         <h1>選擇權即時報價查詢</h1>
+        <p>伺服器當前時間：<span id="currentTime">{{ current_time }}</span></p>
     </header>
     <div id="loading">
         <img src="https://i.gifer.com/ZZ5H.gif" alt="Loading...">
@@ -138,6 +139,21 @@
 
         // 點擊按鈕刷新數據
         document.getElementById('refreshButton').addEventListener('click', fetchAndUpdateData);
+
+        // 動態更新當前時間
+        function updateTime() {
+            const currentTimeElement = document.getElementById('currentTime');
+            const now = new Date();
+            const formattedTime = now.toLocaleString('zh-TW', { hour12: false }); // 格式化為 YYYY/MM/DD HH:MM:SS
+            currentTimeElement.textContent = formattedTime;
+        }
+
+        // 初次設置時間
+        updateTime();
+
+        // 每秒更新時間
+        setInterval(updateTime, 1000);
+
     </script>
 </body>
 </html>

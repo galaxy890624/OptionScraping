@@ -27,6 +27,9 @@ epoch = datetime(1, 1, 1)
 
 # 獲取當前時間
 now = datetime.now()
+today = datetime.today()
+print(now)
+print(today)
 
 # 計算從起點到當前時間的天數
 time_difference = now - epoch

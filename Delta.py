@@ -135,14 +135,27 @@ def get_spot_price_taifex():
 spot_price = get_spot_price_taifex() # 如果沒有資料 會回傳錯誤訊息
 print(f"台指期近月價格: {spot_price}")
 
+# time_to_maturity_days 計算
+def calculate_days_to_maturity(expiration_date):
+    today = datetime.now()
+    dt = expiration_date - today
+    return max((dt.total_seconds()) / (24*60*60), 0)  # 確保剩餘天數不為負
+
+expiration_date = datetime(2024, 12, 18, 13, 30)  # 到期日
+time_to_maturity_days = calculate_days_to_maturity(expiration_date)
+time_to_maturity = time_to_maturity_days / 365
+
+print(calculate_days_to_maturity(expiration_date))
+print(expiration_date)
+
 # 主程式
 def main():
     # 參數設定
     #spot_price = 22277  # 當前現貨價格 (替換為動態價格爬取)
     risk_free_rate = 0.02  # 無風險利率 2% (通常是國債利率)
     volatility = 0.25  # 波動率 25%
-    time_to_maturity_days = 7  # 到期日剩餘天數（7天）
-    time_to_maturity = time_to_maturity_days / 365  # 轉換為年
+    #time_to_maturity_days = 7  # 到期日剩餘天數（7天）
+    #time_to_maturity = time_to_maturity_days / 365  # 轉換為年
 
     # 爬取選擇權數據
     df = fetch_options_data()
@@ -167,4 +180,5 @@ if __name__ == "__main__":
     main()
 
 # 當前時間
-print("當前時間 =",datetime.now())
+current_time = datetime.now()
+print("當前時間 =", current_time)
