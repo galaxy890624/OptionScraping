@@ -3,7 +3,7 @@ import requests as r
 import pandas as pd
 from math import log, sqrt # log 是以e為底
 from scipy.stats import norm
-from datetime import datetime
+from datetime import datetime, time, timedelta
 
 # Black-Scholes 模型計算 Delta 的函數
 # spot_price = 即時價格
@@ -22,6 +22,56 @@ def calculate_delta(spot_price, strike_price, time_to_maturity, risk_free_rate, 
         return norm.cdf(d1) - 1
     else:
         raise ValueError("option_type 必須為 'C' 或 'P'")
+
+# 判斷最近的交易日
+def get_last_trading_day(current_date):
+    """
+    計算最近的一個交易日
+    :param current_date: datetime 對象，表示當前日期
+    :return: 最近的一個交易日的日期
+    """
+
+    # 若是週六，返回週五
+    if current_date.weekday() == 5:  # 週六
+        return current_date - timedelta(days=1)
+    # 若是週日，返回上週五
+    elif current_date.weekday() == 6:  # 週日
+        return current_date - timedelta(days=2)
+    # 若是週一凌晨，返回上週五
+    elif current_date.weekday() == 0 and current_date.hour < 6:  # 週一且時間在 0:00~05:00
+        return current_date - timedelta(days=3)
+    # 其他情況
+    else:
+        return current_date
+
+# 將 CTime 轉換為 Y/MM/DD HH:MM:SS 格式
+def convert_to_custom_timestamp(row):
+    time_str = row["最新交易時間"]
+    if not time_str or len(time_str) != 6:
+        return ""  # 如果時間無效，返回空值
+    
+    # 提取交易時間
+    hours = int(time_str[:2])
+    minutes = int(time_str[2:4])
+    seconds = int(time_str[4:6])
+    trade_time = time(hours, minutes, seconds)
+
+    # 獲取當前系統的日期
+    system_today = datetime.today()
+    system_time = datetime.now().time() # 格式 = 03:58:47.445722
+
+    # 基於 system_time 判斷交易日期
+    if system_time >= time(15, 0):  # 下午盤後交易
+        trade_date = get_last_trading_day(system_today.date())
+    elif system_time <= time(5, 0):  # 凌晨盤後交易
+        trade_date = get_last_trading_day((system_today - timedelta(days=1)).date())
+    else:  # 日間交易
+        trade_date = system_today.date()
+    
+    # 組合 最新交易 的 完整時間
+    # formatted_datetime = datetime.combine(trade_date, trade_time)
+    formatted_str =  f"{trade_date.year}/{trade_date.month:02}/{trade_date.day:02} {trade_time}" #formatted_datetime.strftime("%Y/%m/%d %H:%M:%S")
+    return formatted_str # Y/MM/DD hh:mm:ss
 
 # 爬取資料的函數
 def fetch_options_data():
@@ -55,21 +105,6 @@ def fetch_options_data():
     df["最新交易時間64位"] = df.apply(convert_to_custom_timestamp, axis=1)
 
     return df
-
-# 將 CTime 轉換為 YYYYMMDDHHMMSS 格式
-def convert_to_custom_timestamp(row):
-    time_str = row["最新交易時間"]
-    if not time_str or len(time_str) != 6:
-        return ""  # 如果時間無效，返回空值
-    
-    hours = int(time_str[:2])
-    minutes = int(time_str[2:4])
-    seconds = int(time_str[4:6])
-
-    # 獲取當前日期並組合
-    today = datetime.today()
-    formatted = f"{today.year}/{today.month:02}/{today.day:02} {hours:02}:{minutes:02}:{seconds:02}"
-    return formatted
 
 # spot_price 爬取台指期的資料
 def get_spot_price_taifex():
@@ -130,3 +165,6 @@ def main():
 # 執行主程式
 if __name__ == "__main__":
     main()
+
+# 當前時間
+print("當前時間 =",datetime.now())
