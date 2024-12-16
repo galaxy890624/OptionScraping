@@ -139,14 +139,14 @@ print(f"台指期近月價格: {spot_price}")
 def calculate_days_to_maturity(expiration_date):
     today = datetime.now()
     dt = expiration_date - today
-    return max((dt.total_seconds()) / (24*60*60), 0)  # 確保剩餘天數不為負
+    return max((dt.total_seconds()) / (24*60*60), 0)  # 確保剩餘天數不為負 且 資料型態type 為 float
 
 expiration_date = datetime(2024, 12, 18, 13, 30)  # 到期日
 time_to_maturity_days = calculate_days_to_maturity(expiration_date)
 time_to_maturity = time_to_maturity_days / 365
 
-print(calculate_days_to_maturity(expiration_date))
-print(expiration_date)
+print("到期日 =", calculate_days_to_maturity(expiration_date))
+print("到期天數 =", expiration_date)
 
 # 主程式
 def main():
