@@ -73,6 +73,34 @@
         #loading img {
             width: 50px;
         }
+
+        /* Tooltip 样式 */
+        .tooltip {
+            position: relative;
+            display: inline-block;
+            cursor: pointer;
+        }
+        .tooltip .tooltiptext {
+            visibility: hidden;
+            width: 250px;
+            background-color: #555;
+            color: #fff;
+            text-align: left;
+            border-radius: 5px;
+            padding: 10px;
+            position: absolute;
+            z-index: 1;
+            bottom: 125%; /* 在目標上方顯示 */
+            left: 50%;
+            margin-left: -125px;
+            opacity: 0;
+            transition: opacity 0.3s;
+            font-size: 12px;
+        }
+        .tooltip:hover .tooltiptext {
+            visibility: visible;
+            opacity: 1;
+        }
     </style>
 </head>
 <body>
@@ -95,7 +123,17 @@
                 <th>賣出價格</th>
                 <th>最新成交價</th>
                 <th>最新交易時間</th>
-                <th>Delta</th>
+                <th>
+                    <div class="tooltip">
+                        Delta
+                        <span class="tooltiptext">
+                            1. Delta = 標的物增加 1 點時, 選擇權增加的價格<br>
+                            2. 進價內的機率<br>
+                            3. 買權: 越深價內則越接近1, 越深價外則越接近0, 定義價平為0.5<br>
+                            4. 賣權: 越深價內則越接近-1, 越深價外則越接近0, 定義價平為-0.5
+                        </span>
+                    </div>
+                </th>
             </tr>
         </thead>
         <tbody id="dataTable">
@@ -144,7 +182,9 @@
         function updateTime() {
             const currentTimeElement = document.getElementById('currentTime');
             const now = new Date();
-            const formattedTime = now.toLocaleString('zh-TW', { hour12: false }); // 格式化為 YYYY/MM/DD HH:MM:SS
+            const offset = 8; // 台北時區 GMT+8
+            const localTime = new Date(now.getTime() + offset * 60 * 60 * 1000);
+            const formattedTime = localTime.toISOString().slice(0, 19).replace('T', ' ');
             currentTimeElement.textContent = formattedTime;
         }
 
