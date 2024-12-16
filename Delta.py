@@ -38,7 +38,7 @@ def get_last_trading_day(current_date):
     elif current_date.weekday() == 6:  # 週日
         return current_date - timedelta(days=2)
     # 若是週一凌晨，返回上週五
-    elif current_date.weekday() == 0 and current_date.hour < 6 and current_date:  # 週一且時間在 0:00~05:00
+    elif current_date.weekday() == 0 and datetime.now().time() < time(8, 45):  # 週一且時間在 0:00~08:45
         return current_date - timedelta(days=3)
     # 其他情況
     else:
