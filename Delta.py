@@ -17,7 +17,7 @@ def calculate_delta(spot_price, strike_price, time_to_maturity, risk_free_rate, 
     d1 = (log(spot_price / strike_price) + (risk_free_rate + 0.5 * volatility ** 2) * time_to_maturity) / (volatility * sqrt(time_to_maturity))
     #d2 = d1 - volatility * sqrt(time_to_maturity)
     if option_type == "C":  # Call 選擇權
-        return norm.cdf(d1) # 常態分布 的 累積分布函數
+        return norm.cdf(d1) # 常態分布 的 累積分布函數 ( avg = 0, sd = 1 )
     elif option_type == "P":  # Put 選擇權
         return norm.cdf(d1) - 1
     else:
