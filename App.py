@@ -1,12 +1,12 @@
 from flask import Flask, jsonify, request, render_template
-from Delta import fetch_options_data, get_spot_price_taifex, calculate_delta, current_time, datetime
+from Delta import fetch_options_data, get_spot_price_taifex, calculate_delta, current_time, datetime, spot_price
 
 app = Flask(__name__)
 
 @app.route('/') # http://127.0.0.1:5000
 def home():
     current_time = datetime.now().strftime("%Y/%m/%d %H:%M:%S")  # 格式化當前時間
-    return render_template('Index.html', current_time=current_time)
+    return render_template('Index.html', current_time=current_time, spot_price = spot_price)
 
 @app.route('/api/options', methods=['GET'])
 def get_options():
