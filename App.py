@@ -33,7 +33,8 @@ def get_options():
         df["Delta"] = deltas
 
         # 返回 JSON 格式
-        return jsonify(df.to_dict(orient="records"))
+        # 包括 spot_price 一起返回
+        return jsonify({"spot_price": spot_price, "options": df.to_dict(orient="records")})
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
