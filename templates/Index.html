@@ -108,7 +108,16 @@
         <h1>選擇權即時報價查詢</h1>
         <p>伺服器當前時間: <span id="currentTime">{{ current_time }}</span></p>
         <p>台指期近月價格: <span id="SpotPrice">加載中...</span></p>
-        <p>到期日剩餘天數: <span id="daysToMaturity">-</span> 天</p>
+        <p>
+            <div class="tooltip">
+                到期日剩餘天數: <span id="daysToMaturity">-</span> 天
+                <span class="tooltiptext">
+                    關於 : 結算日<br><br>
+
+                    結算日 : <span id="expirationDate"></span>
+                </span>
+            </div>
+        </p>
     </header>
     <div id="loading">
         <img src="https://i.gifer.com/ZZ5H.gif" alt="Loading...">
@@ -126,7 +135,7 @@
                 <th>最新成交價</th>
                 <th>最新交易時間</th>
                 <th>
-                    <div class="tooltip">
+                    <div class="tooltip"> <!-- 必須和head style 裡面的變數一致 -->
                         Delta
                         <span class="tooltiptext">
                             關於 : Delta值<br><br>
@@ -223,15 +232,25 @@
 
         // 動態更新剩餘天數
         function updateDaysToMaturity() {
-            const expirationDate = new Date(expirationDateStr);
-            const now = new Date();
-            const timeDifference = expirationDate - now;
+            const expirationDate = new Date(expirationDateStr); // 到期日
+            const now = new Date(); // 當前時間
+            const timeDifference = expirationDate - now; // 時間差
             const daysToMaturity = Math.max(timeDifference / (1000 * 60 * 60 * 24), 0);
             console.log(daysToMaturity)
             document.getElementById('daysToMaturity').textContent = daysToMaturity;
+
+            const expirationDateElement = document.getElementById('expirationDate');
+            const daysToMaturityElement = document.getElementById('daysToMaturity');
+
+            // 更新 HTML 元素內容
+            expirationDateElement.textContent = expirationDate.toLocaleDateString("zh-TW"); // 顯示到期日
+            daysToMaturityElement.textContent = daysToMaturity; // 顯示剩餘天數
+            
         }
 
+        // 初次更新
         updateDaysToMaturity();
+        // // 每 1,000 毫秒 更新
         setInterval(updateDaysToMaturity, 1000)
 
     </script>
