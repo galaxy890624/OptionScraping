@@ -5,11 +5,14 @@ from Delta import fetch_options_data, get_spot_price_taifex, calculate_delta, cu
 app = Flask(__name__)
 CORS(app)
 
+# 首頁路由，渲染模板
 @app.route('/') # http://127.0.0.1:5000
 def home():
+    expiration_date = datetime(2024, 12, 18, 13, 30)  # 假設到期日
     current_time = datetime.now().strftime("%Y/%m/%d %H:%M:%S")  # 格式化當前時間
-    return render_template('Index.html', current_time=current_time)
+    return render_template('Index.html', current_time=current_time, expiration_date=expiration_date.strftime("%Y-%m-%d %H:%M:%S"))
 
+# 提供選擇權數據的 API
 @app.route('/api/options', methods=['GET'])
 def get_options():
     try:
@@ -41,11 +44,22 @@ def get_options():
     except Exception as e:
         return jsonify({"error": str(e)}), 500
     
+# 提供台指期現貨價格的 API
 @app.route('/api/spot_price', methods=['GET'])
 def get_spot_price():
     try:
         spot_price = get_spot_price_taifex()
         return jsonify({"spot_price": spot_price})
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+# 提供到期日剩餘天數的 API
+@app.route('/api/time_to_maturity', methods=['GET'])
+def get_time_to_maturity():
+    try:
+        expiration_date = datetime(2024, 12, 18, 13, 30)  # 假設到期日
+        time_to_maturity_days = calculate_days_to_maturity(expiration_date)
+        return jsonify({"time_to_maturity_days": time_to_maturity_days})
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 

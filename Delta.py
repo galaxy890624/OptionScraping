@@ -145,8 +145,8 @@ expiration_date = datetime(2024, 12, 18, 13, 30)  # 到期日
 time_to_maturity_days = calculate_days_to_maturity(expiration_date)
 time_to_maturity = time_to_maturity_days / 365
 
-print("到期日 =", calculate_days_to_maturity(expiration_date))
-print("到期天數 =", expiration_date)
+print("到期天數 =", calculate_days_to_maturity(expiration_date))
+print("到期日 =", expiration_date)
 
 # 主程式
 def main():
