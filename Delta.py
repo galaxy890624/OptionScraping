@@ -74,6 +74,9 @@ def convert_to_custom_timestamp(row):
     return formatted_str # Y/MM/DD hh:mm:ss
 
 # 爬取資料的函數
+# 資料來源
+# Step 1. https://mis.taifex.com.tw/futures/RegularSession/EquityIndices/Options/
+# Step 2. F12 > Network > Fetch/XHR
 def fetch_options_data():
     url = "https://mis.taifex.com.tw/futures/api/getQuoteListOption"
     payload = {
