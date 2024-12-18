@@ -114,7 +114,10 @@
                 <span class="tooltiptext">
                     關於 : 結算日<br><br>
 
-                    結算日 : <span id="expirationDate"></span>
+                    1. 結算日 : <span id="expirationDate"></span><br>
+                    2. 月選在第3個星期3 13:30結算<br>
+                    3. 週選在每個星期3 13:30結算<br>
+                    4. 結算價 = 13:00 ~ 13:25, 每5秒有1個價, 共300個價格, 13:25 ~ 13:30的最後一筆收盤指數, 共1個價格, 總共301個價格, 取平均
                 </span>
             </div>
         </p>
@@ -264,7 +267,6 @@
             // 更新 HTML 元素內容
             expirationDateElement.textContent = expirationDate.toLocaleDateString("zh-TW"); // 顯示到期日
             daysToMaturityElement.textContent = daysToMaturity; // 顯示剩餘天數
-            
         }
 
         // 初次更新
