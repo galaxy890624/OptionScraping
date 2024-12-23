@@ -11,4 +11,3 @@ Data: http://127.0.0.1:5000/api/options
 
 # To do list
 1. 無風險利率
-2. 波動率 資料來源 https://mis.taifex.com.tw/futures/VolatilityQuotes/

@@ -84,7 +84,7 @@ def fetch_options_data():
         "SymbolType": "O",
         "KindID": "1",
         "CID": "TXO",
-        "ExpireMonth": "202412",  # 替換為你需要的到期月份 格式 = 202406W4(for週選); 202407(for月選)
+        "ExpireMonth": "202412W4",  # 替換為你需要的到期月份 格式 = 202406W4(for週選); 202407(for月選)
         "RowSize": "全部",
         "PageNo": "",
         "SortColumn": "",
@@ -144,19 +144,34 @@ def calculate_days_to_maturity(expiration_date):
     dt = expiration_date - today
     return max((dt.total_seconds()) / (24*60*60), 0)  # 確保剩餘天數不為負 且 資料型態type 為 float
 
-expiration_date = datetime(2024, 12, 18, 13, 30)  # 到期日
+expiration_date = datetime(2024, 12, 25, 13, 30)  # 到期日
 time_to_maturity_days = calculate_days_to_maturity(expiration_date)
 time_to_maturity = time_to_maturity_days / 365
 
 print("到期天數 =", calculate_days_to_maturity(expiration_date))
 print("到期日 =", expiration_date)
 
+# volatility 爬取波動率的資料
+def get_volatility():
+    url = "https://mis.taifex.com.tw/futures/api/getQuoteListVIX"
+    payload = {"SortColumn":"",
+                "AscDesc":"A"}
+    res = r.post(url, json=payload)
+    data = res.json()
+    volatility = float(data['RtData']['QuoteList'][0]['CLastPrice'])
+    return volatility
+
+volatility = get_volatility() / 100 # 如果沒有資料 會回傳錯誤訊息
+print(f"台指選波動率: {volatility}")
+    
+
+
 # 主程式
 def main():
     # 參數設定
     #spot_price = 22277  # 當前現貨價格 (替換為動態價格爬取)
     risk_free_rate = 0.02  # 無風險利率 2% (通常是國債利率)
-    volatility = 0.25  # 波動率 25%
+    # volatility = 0.25  # 波動率 25%
     #time_to_maturity_days = 7  # 到期日剩餘天數（7天）
     #time_to_maturity = time_to_maturity_days / 365  # 轉換為年
 
@@ -185,3 +200,5 @@ if __name__ == "__main__":
 # 當前時間
 current_time = datetime.now()
 print("當前時間 =", current_time)
+
+#print(get_last_trading_day(datetime(2024, 12, 24, 2, 0)))

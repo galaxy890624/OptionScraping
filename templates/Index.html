@@ -90,8 +90,8 @@
             padding: 10px;
             position: absolute;
             z-index: 1;
-            bottom: 125%; /* 在目標上方顯示 */
-            left: 50%;
+            top: 125%; /* 在目標下方顯示 */
+            left: 50% + 100px;
             margin-left: -125px;
             opacity: 0;
             transition: opacity 0.3s;
@@ -106,15 +106,15 @@
 <body>
     <header>
         <h1>選擇權即時報價查詢</h1>
-        <p>伺服器當前時間: <span id="currentTime">{{ current_time }}</span></p>
+        <p>伺服器當前時間: <span id="CurrentTime">{{ current_time }}</span></p>
         <p>台指期近月價格: <span id="SpotPrice">加載中...</span></p>
         <p>
             <div class="tooltip">
-                到期日剩餘天數: <span id="daysToMaturity">-</span> 天
+                到期日剩餘天數: <span id="DaysToMaturity">-</span> 天
                 <span class="tooltiptext">
                     關於 : 結算日<br><br>
 
-                    1. 結算日 : <span id="expirationDate"></span><br>
+                    1. 結算日 : <span id="ExpirationDate"></span><br>
                     2. 月選在第3個星期3 13:30結算<br>
                     3. 週選在每個星期3 13:30結算<br>
                     4. 結算價 = 13:00 ~ 13:25, 每5秒有1個價, 共300個價格, 13:25 ~ 13:30的最後一筆收盤指數, 共1個價格, 總共301個價格, 取平均
@@ -154,7 +154,16 @@
                 </th>
                 <th>買進價格</th>
                 <th>賣出價格</th>
-                <th>最新成交價</th>
+                <th>
+                    <div class="tooltip">
+                        最新成交價
+                        <span class="tooltiptext">
+                            關於 : 最新成交價<br><br>
+    
+                            上一筆交易的成交價
+                        </span>
+                    </div>
+                </th>
                 <th>最新交易時間</th>
                 <th>
                     <div class="tooltip"> <!-- 必須和head style 裡面的變數一致 -->
@@ -176,13 +185,13 @@
         </tbody>
     </table>
     <script>
-        const expirationDateStr = "{{ expiration_date }}"; // 後端傳來的到期日
+        const ExpirationDateStr = "{{ expiration_date }}"; // 後端傳來的到期日
         // 獲取數據 並 更新表格 與 SpotPrice
         async function fetchAndUpdateData() {
             const loading = document.getElementById('loading');
             const tableBody = document.getElementById('dataTable');
             const spotPriceElement = document.getElementById('SpotPrice');
-            //const daysToMaturityElement = document.getElementById('daysToMaturity');
+            //const DaysToMaturityElement = document.getElementById('DaysToMaturity');
 
             try {
                 console.log("發送請求到 /api/options...");
@@ -217,7 +226,7 @@
                 /* 獲取到期日剩餘天數
                 const maturityResponse = await fetch('/api/time_to_maturity');
                 const maturityData = await maturityResponse.json();
-                daysToMaturityElement.textContent = maturityData.time_to_maturity_days || "N/A";*/
+                DaysToMaturityElement.textContent = maturityData.time_to_maturity_days || "N/A";*/
 
             } catch (error) {
                 console.error("Error fetching data:", error);
@@ -237,42 +246,42 @@
         document.getElementById('refreshButton').addEventListener('click', fetchAndUpdateData);
 
         // 動態更新當前時間
-        function updateTime() {
-            const currentTimeElement = document.getElementById('currentTime');
+        function UpdateTime() {
+            const CurrentTimeElement = document.getElementById('CurrentTime');
             const now = new Date();
             const offset = 8; // 台北時區 GMT+8
             const localTime = new Date(now.getTime() + offset * 60 * 60 * 1000);
             const formattedTime = localTime.toISOString().slice(0, 19).replace('T', ' ');
-            currentTimeElement.textContent = formattedTime;
+            CurrentTimeElement.textContent = formattedTime;
         }
 
         // 初次設置時間
-        updateTime();
+        UpdateTime();
 
         // 每秒更新時間
-        setInterval(updateTime, 1000);
+        setInterval(UpdateTime, 1000);
 
         // 動態更新剩餘天數
-        function updateDaysToMaturity() {
-            const expirationDate = new Date(expirationDateStr); // 到期日
+        function UpdateDaysToMaturity() {
+            const ExpirationDate = new Date(ExpirationDateStr); // 到期日
             const now = new Date(); // 當前時間
-            const timeDifference = expirationDate - now; // 時間差
-            const daysToMaturity = Math.max(timeDifference / (1000 * 60 * 60 * 24), 0);
-            console.log(daysToMaturity)
-            document.getElementById('daysToMaturity').textContent = daysToMaturity;
+            const timeDifference = ExpirationDate - now; // 時間差
+            const DaysToMaturity = Math.max(timeDifference / (1000 * 60 * 60 * 24), 0);
+            console.log(DaysToMaturity)
+            document.getElementById('DaysToMaturity').textContent = DaysToMaturity;
 
-            const expirationDateElement = document.getElementById('expirationDate');
-            const daysToMaturityElement = document.getElementById('daysToMaturity');
+            const ExpirationDateElement = document.getElementById('ExpirationDate');
+            const DaysToMaturityElement = document.getElementById('DaysToMaturity');
 
             // 更新 HTML 元素內容
-            expirationDateElement.textContent = expirationDate.toLocaleDateString("zh-TW"); // 顯示到期日
-            daysToMaturityElement.textContent = daysToMaturity; // 顯示剩餘天數
+            ExpirationDateElement.textContent = ExpirationDate.toLocaleDateString("zh-TW"); // 顯示到期日
+            DaysToMaturityElement.textContent = DaysToMaturity; // 顯示剩餘天數
         }
 
         // 初次更新
-        updateDaysToMaturity();
+        UpdateDaysToMaturity();
         // // 每 1,000 毫秒 更新
-        setInterval(updateDaysToMaturity, 1000)
+        setInterval(UpdateDaysToMaturity, 1000)
 
     </script>
 </body>
