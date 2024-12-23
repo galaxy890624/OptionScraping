@@ -164,6 +164,26 @@
                         </span>
                     </div>
                 </th>
+                <th>
+                    <div class="tooltip">
+                        昨日收盤價格
+                        <span class="tooltiptext">
+                            關於 : 昨日收盤價格<br><br>
+    
+                            昨日最後一筆交易的成交價
+                        </span>
+                    </div>
+                </th>
+                <th>
+                    <div class="tooltip">
+                        漲跌幅
+                        <span class="tooltiptext">
+                            關於 : 漲跌幅<br><br>
+    
+                            最新成交價 - 昨日收盤價格
+                        </span>
+                    </div>
+                </th>
                 <th>最新交易時間</th>
                 <th>
                     <div class="tooltip"> <!-- 必須和head style 裡面的變數一致 -->
@@ -191,7 +211,6 @@
             const loading = document.getElementById('loading');
             const tableBody = document.getElementById('dataTable');
             const spotPriceElement = document.getElementById('SpotPrice');
-            //const DaysToMaturityElement = document.getElementById('DaysToMaturity');
 
             try {
                 console.log("發送請求到 /api/options...");
@@ -217,16 +236,13 @@
                         <td>${option["買進價格"] || "-"}</td>
                         <td>${option["賣出價格"] || "-"}</td>
                         <td>${option["最新成交價"] || "-"}</td>
+                        <td>${option["昨日收盤價格"] || "-"}</td>
+                        <td>${option["漲跌幅"] || "-"}</td>
                         <td>${option["最新交易時間64位"] || "-"}</td>
                         <td>${option["Delta"]}</td>
                     `; // 如果沒有資料時 回傳 "-"
                     tableBody.appendChild(row);
                 });
-
-                /* 獲取到期日剩餘天數
-                const maturityResponse = await fetch('/api/time_to_maturity');
-                const maturityData = await maturityResponse.json();
-                DaysToMaturityElement.textContent = maturityData.time_to_maturity_days || "N/A";*/
 
             } catch (error) {
                 console.error("Error fetching data:", error);

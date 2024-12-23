@@ -37,6 +37,27 @@ def get_options():
 
         df["Delta"] = deltas
 
+        difference_prices = []
+        for _, row in df.iterrows():
+            try:
+                # 確保數據存在 且 可轉換為浮點數
+                reference_price = float(row["昨日收盤價格"]) if row["昨日收盤價格"] else None
+                last_price = float(row["最新成交價"]) if row["最新成交價"] else None
+                
+                if reference_price is not None and last_price is not None:
+                    # 計算漲跌幅
+                    difference_price = last_price - reference_price
+                    difference_prices.append(difference_price)
+                else:
+                    # 若數據缺失，設為 NaN 或默認值
+                    difference_prices.append("")
+            except ValueError:
+                # 捕獲無法轉換為浮點數的情況
+                difference_prices.append("")
+
+        # 將 漲跌幅 新增為 DataFrame 欄位
+        df["漲跌幅"] = difference_prices
+
         # 返回 JSON 格式
         # 包括 spot_price 一起返回
         return jsonify({"spot_price": spot_price, "options": df.to_dict(orient="records")})

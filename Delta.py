@@ -12,7 +12,6 @@ from datetime import datetime, time, timedelta
 # volatility = 隱含波動率
 # time_to_maturity = 到期時間
 
-
 def calculate_delta(spot_price, strike_price, time_to_maturity, risk_free_rate, volatility, option_type="C"):
     d1 = (log(spot_price / strike_price) + (risk_free_rate + 0.5 * volatility ** 2) * time_to_maturity) / (volatility * sqrt(time_to_maturity))
     #d2 = d1 - volatility * sqrt(time_to_maturity)
@@ -37,9 +36,6 @@ def get_last_trading_day(current_date):
     # 若是週日，返回上週五
     elif current_date.weekday() == 6:  # 週日
         return current_date - timedelta(days=2)
-    # 若是週一凌晨，返回上週五
-    elif current_date.weekday() == 0 and datetime.now().time() < time(8, 45):  # 週一且時間在 0:00~08:45
-        return current_date - timedelta(days=3)
     # 其他情況
     else:
         return current_date
@@ -73,10 +69,7 @@ def convert_to_custom_timestamp(row):
     formatted_str =  f"{trade_date.year}/{trade_date.month:02}/{trade_date.day:02} {trade_time}" #formatted_datetime.strftime("%Y/%m/%d %H:%M:%S")
     return formatted_str # Y/MM/DD hh:mm:ss
 
-# 爬取資料的函數
-# 資料來源
-# Step 1. https://mis.taifex.com.tw/futures/RegularSession/EquityIndices/Options/
-# Step 2. F12 > Network > Fetch/XHR
+# 爬取 台指選擇權資料 的函數
 def fetch_options_data():
     url = "https://mis.taifex.com.tw/futures/api/getQuoteListOption"
     payload = {
@@ -96,13 +89,8 @@ def fetch_options_data():
 
     # 選取相關欄位
     # DataFrame
-    # 要用 data 的 資料
-    '''
-    以下是data的格式
-    {'RtCode': '0', 'RtMsg': '', 'RtData': {'QuoteList': [{'SymbolID': 'TX420200K4-O', 'SpotID': '', 'DispCName': '臺指選W4114;20200買權', 'DispEName': 'TX4W4114;20200C', 'Status': 'TC', 'CBidPrice1': '2800.000', 'CBidSize1': '5', 'CAskPrice1': '2830.000', 'CAskSize1': '5', 'CTotalVolume': '', 'COpenPrice': '0.000', 'CHighPrice': '0.000', 'CLowPrice': '0.000', 'CLastPrice': '', 'CRefPrice': '2370.000', 'CCeilPrice': '4620.000', 'CFloorPrice': '115.000', 'CP': 'C', 'StrikePrice': '20200', 'SettlementPrice': '2810.000', 'OpenInterest': '0', 'CDate': '20241122', 'CTime': '', 'SpotWeights': '1.0', 'CTestTime': '', 'CBestBidPrice': '2800.000', 'CBestAskPrice': '2830.000', 'CBestBidSize': '5', 'CBestAskSize': '5'}, ...}
-    '''
-    df = df[["DispCName", "StrikePrice", "CP", "CBidPrice1", "CAskPrice1", "CLastPrice", "CTime"]]
-    df.columns = ["商品名稱", "履約價", "買賣權", "買進價格", "賣出價格", "最新成交價", "最新交易時間"]
+    df = df[["DispCName", "StrikePrice", "CP", "CBidPrice1", "CAskPrice1", "CLastPrice", "CRefPrice", "CTime"]]
+    df.columns = ["商品名稱", "履約價", "買賣權", "買進價格", "賣出價格", "最新成交價", "昨日收盤價格", "最新交易時間"]
 
     # 將 "CTime" 轉換為 64 位格式
     df["最新交易時間64位"] = df.apply(convert_to_custom_timestamp, axis=1)
@@ -122,14 +110,6 @@ def get_spot_price_taifex():
            "SortColumn":"",
            "AscDesc":"A"}
     res = r.post(url, json=payload)
-    '''
-    以下是 data 的格式
-    {'SymbolID': 'TXFL4-F', 'SpotID': '', 'DispCName': '臺指期124', 'DispEName': 'TX124', 'Status': '', 'CBidPrice1': '22183.00', 'CBidSize1': '10', 'CAskPrice1': '22185.00', 'CAskSize1': '4', 'CTotalVolume': '26918', 'COpenPrice': '22210.00', 'CHighPrice': '22221.00', 'CLowPrice': '22004.00', 'CLastPrice': '22185.00', 'CRefPrice': '22330.00', 'CCeilPrice': '24563.00', 'CFloorPrice': '20097.00', 'SettlementPrice': '', 'OpenInterest': '', 'CDate': '20241129', 'CTime': '092652', 'CTestTime': '084455', 'CDiff': '-145.00', 'CDiffRate': '-0.65', 'CAmpRate': '0.97', 'CBestBidPrice': '22183.00', 'CBestAskPrice': '22185.00', 'CBestBidSize': '10', 'CBestAskSize': '4', 'CTestPrice': '22216.00', 'CTestVolume': '201'}
-    第1筆資料 = 加權指數(台指現貨)
-    第2筆資料 = 近月
-    第3筆資料 = 次月
-    通常是用第2筆資料
-    '''
     data = res.json()
     spot_price = float(data['RtData']['QuoteList'][1]['CLastPrice'])  # 取第2筆資料
     return spot_price
@@ -188,7 +168,28 @@ def main():
 
     # 將 Delta 新增為 DataFrame 欄位
     df["Delta"] = deltas
-    #return df.to_dict(orient="records")
+
+    # 計算漲跌幅 並加入 DataFrame
+    difference_prices = []
+    for _, row in df.iterrows():
+        try:
+            # 確保數據存在 且 可轉換為浮點數
+            reference_price = float(row["昨日收盤價格"]) if row["昨日收盤價格"] else None
+            last_price = float(row["最新成交價"]) if row["最新成交價"] else None
+            
+            if reference_price is not None and last_price is not None:
+                # 計算漲跌幅
+                difference_price = last_price - reference_price
+                difference_prices.append(difference_price)
+            else:
+                # 若數據缺失，設為 NaN 或默認值
+                difference_prices.append("")
+        except ValueError:
+            # 捕獲無法轉換為浮點數的情況
+            difference_prices.append("")
+
+    # 將 漲跌幅 新增為 DataFrame 欄位
+    df["漲跌幅"] = difference_prices
 
     # 顯示 DataFrame 結果
     print(df)
@@ -200,5 +201,3 @@ if __name__ == "__main__":
 # 當前時間
 current_time = datetime.now()
 print("當前時間 =", current_time)
-
-#print(get_last_trading_day(datetime(2024, 12, 24, 2, 0)))
