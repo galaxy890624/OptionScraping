@@ -38,3 +38,15 @@ Step 2. F12 > Network > Fetch/XHR > Payload 或 Response
 step 3. 滑鼠放在 getQuoteList 上面 查看url 複製到python
 
 step 4. Payload 或 Response
+
+以下是 data 的格式
+
+    {'SymbolID': 'TXFL4-F', 'SpotID': '', 'DispCName': '臺指期124', 'DispEName': 'TX124', 'Status': '', 'CBidPrice1': '22183.00', 'CBidSize1': '10', 'CAskPrice1': '22185.00', 'CAskSize1': '4', 'CTotalVolume': '26918', 'COpenPrice': '22210.00', 'CHighPrice': '22221.00', 'CLowPrice': '22004.00', 'CLastPrice': '22185.00', 'CRefPrice': '22330.00', 'CCeilPrice': '24563.00', 'CFloorPrice': '20097.00', 'SettlementPrice': '', 'OpenInterest': '', 'CDate': '20241129', 'CTime': '092652', 'CTestTime': '084455', 'CDiff': '-145.00', 'CDiffRate': '-0.65', 'CAmpRate': '0.97', 'CBestBidPrice': '22183.00', 'CBestAskPrice': '22185.00', 'CBestBidSize': '10', 'CBestAskSize': '4', 'CTestPrice': '22216.00', 'CTestVolume': '201'}
+
+第1筆資料 = 加權指數(台指現貨)
+
+第2筆資料 = 近月
+
+第3筆資料 = 次月
+
+通常是用第2筆資料
