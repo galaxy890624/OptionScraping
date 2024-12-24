@@ -54,20 +54,6 @@
             z-index: 9998;
         }
 
-        .column-highlight {
-            position: absolute;  /* 改為 absolute */
-            background: rgba(0.2, 0.2, 0.2, 0.8);  /* 更暗的背景 */
-            color: white;  /* 白色文字 */
-            padding: 5px 10px;
-            border-radius: 4px;
-            z-index: 1000;
-            pointer-events: none;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
-            font-size: 14px;
-            white-space: nowrap;  /* 防止文字換行 */
-            border: 1px solid rgba(255, 255, 255, 0.2);  /* 添加細邊框 */
-        }
-
         /* 原有的樣式 */
         header {
             background: #000000;
@@ -313,6 +299,12 @@
                 createStar(e.clientX, e.clientY);
                 lastStarTime = currentTime;
             }
+
+            // 表格 如果tooltip是可見的,就更新它的位置
+            if (tooltip.style.display === 'block') {
+                tooltip.style.left = e.pageX + 10 + 'px';
+                tooltip.style.top = e.pageY + 10 + 'px';
+            }
         });
 
         function createStar(x, y) {
@@ -347,53 +339,6 @@
                 star.remove();
             }, 1000);
         }
-
-        // 創建 column highlight tooltip
-        const tooltip = document.createElement('div');
-        tooltip.className = 'column-highlight';
-        tooltip.style.display = 'none';
-        document.body.appendChild(tooltip);
-
-        // 獲取表格元素
-        const table = document.querySelector('table');
-        const headerCells = Array.from(table.querySelectorAll('th'));
-
-        // 為表格添加事件委託
-        document.getElementById('dataTable').addEventListener('mouseover', (e) => {
-            if (e.target.tagName === 'TD') {
-                const td = e.target;
-                const rect = td.getBoundingClientRect();
-                const columnIndex = td.cellIndex;
-                const headerCell = headerCells[columnIndex];
-                let headerText;
-
-                // 檢查是否有 tooltip div，如果有，獲取其文本內容
-                const tooltipDiv = headerCell.querySelector('.tooltip');
-                if (tooltipDiv) {
-                    headerText = tooltipDiv.firstChild.textContent.trim();
-                } else {
-                    headerText = headerCell.textContent.trim();
-                }
-                
-                // 顯示 tooltip
-                tooltip.textContent = headerText;
-                tooltip.style.display = 'block';
-
-                // 計算新的位置：在單元格的正上方
-                const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
-                const scrollLeft = window.pageXOffset || document.documentElement.scrollLeft;
-                
-                // 設置位置在單元格的上方
-                tooltip.style.left = (rect.left + scrollLeft) + 'px';
-                tooltip.style.top = (rect.top + scrollTop - tooltip.offsetHeight - 5) + 'px';
-            }
-        });
-
-        document.getElementById('dataTable').addEventListener('mouseout', (e) => {
-            if (e.target.tagName === 'TD') {
-                tooltip.style.display = 'none';
-            }
-        });
 
         // 原有的 JavaScript 代碼
         const ExpirationDateStr = "{{ expiration_date }}"; // 後端傳來的到期日
@@ -486,7 +431,6 @@
             const now = new Date(); // 當前時間
             const timeDifference = ExpirationDate - now; // 時間差
             const DaysToMaturity = Math.max(timeDifference / (1000 * 60 * 60 * 24), 0);
-            console.log(DaysToMaturity)
             document.getElementById('DaysToMaturity').textContent = DaysToMaturity;
 
             const ExpirationDateElement = document.getElementById('ExpirationDate');
