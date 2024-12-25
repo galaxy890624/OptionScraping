@@ -6,7 +6,7 @@ app = Flask(__name__)
 CORS(app)
 
 # 首頁路由，渲染模板
-@app.route('/') # http://127.0.0.1:5000
+@app.route('/Index') # http://127.0.0.1:5000/Index
 def home():
     expiration_date = datetime(2024, 12, 25, 13, 30)  # 假設到期日
     current_time = datetime.now().strftime("%Y/%m/%d %H:%M:%S")  # 格式化當前時間
