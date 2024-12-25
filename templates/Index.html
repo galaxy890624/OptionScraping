@@ -173,16 +173,10 @@
         <p>伺服器當前時間: <span id="CurrentTime">{{ current_time }}</span></p>
         <p>台指期近月價格: <span id="SpotPrice">加載中...</span></p>
         <p>
-            <div class="tooltip">
+            <div class="tooltip" id="DaysToMaturityContainer" data-title="關於 : 結算日" data-content="1. 月選在第3個星期3 13:30結算<br>2. 週選在每個星期3 13:30結算<br>3. 結算價 = 13:00 ~ 13:25, 每5秒有1個價, 共300個價格, 13:25 ~ 13:30的最後一筆收盤指數, 共1個價格, 總共301個價格, 取平均">
+                
+                到期日: <span id='ExpirationDate'></span><br>
                 到期日剩餘天數: <span id="DaysToMaturity">-</span> 天
-                <span class="tooltiptext">
-                    關於 : 結算日<br><br>
-
-                    1. 結算日 : <span id="ExpirationDate"></span><br>
-                    2. 月選在第3個星期3 13:30結算<br>
-                    3. 週選在每個星期3 13:30結算<br>
-                    4. 結算價 = 13:00 ~ 13:25, 每5秒有1個價, 共300個價格, 13:25 ~ 13:30的最後一筆收盤指數, 共1個價格, 總共301個價格, 取平均
-                </span>
             </div>
         </p>
     </header>
@@ -195,36 +189,54 @@
         <thead>
             <tr>
                 <th>
-                    <div class="tooltip" data-title="商品名稱" data-content="自交易當月起連續3個月份，另加上3月、6月、9月、12月中2個接續的季月，另除每月第1個星期三外，得於交易當週之星期三一般交易時段加掛次二週之星期三到期之契約">
+                    <div class="tooltip" data-title="關於 : 商品名稱" data-content="自交易當月起連續3個月份，另加上3月、6月、9月、12月中2個接續的季月，另除每月第1個星期三外，得於交易當週之星期三一般交易時段加掛次二週之星期三到期之契約">
                         商品名稱
                     </div>
                 </th>
-                <th>履約價</th>
+                <!--當前履約價格: ${option['履約價']}<br>相對現貨價格: ${(option['履約價'] - data.spot_price) 點-->
                 <th>
-                    <div class="tooltip" data-title="買賣權" data-content="C = Call, 買權<br>P = Put, 賣權">
+                    <div class="tooltip" data-title="關於: 履約價" data-content="如果沒有進入平倉,在結算時可以用每1口多少點買進(或賣出)相對應的標的">
+                        履約價
+                    </div>
+                </th>
+                <th>
+                    <div class="tooltip" data-title="關於 : 買賣權" data-content="C = Call, 買權<br>P = Put, 賣權">
                         買賣權
                     </div>
                 </th>
-                <th>買進價格</th>
-                <th>賣出價格</th>
+                <!-- data-content="市場最佳買進價格<br>當前報價: ${option['買進價格'] || -"-->
                 <th>
-                    <div class="tooltip" data-title="最新成交價" data-content="關於 : 最新成交價<br><br>上一筆交易的成交價">
+                    <div class="tooltip" data-title="關於: 買進價格" data-content="市場最佳買進價格">
+                        買進價格
+                    </div>
+                </th>
+                <th>
+                    <div class="tooltip" data-title="關於: 賣出價格" data-content="市場最佳賣出價格">
+                        賣出價格
+                    </div>
+                </th>
+                <th>
+                    <div class="tooltip" data-title="關於 : 最新成交價" data-content="上一筆交易的成交價">
                         最新成交價
                     </div>
                 </th>
                 <th>
-                    <div class="tooltip" data-title="昨日收盤價格" data-content="關於 : 昨日收盤價格<br><br>昨日最後一筆交易的成交價">
+                    <div class="tooltip" data-title="關於 : 昨日收盤價格" data-content="昨日最後一筆交易的成交價">
                         昨日收盤價格
                     </div>
                 </th>
                 <th>
-                    <div class="tooltip" data-title="漲跌幅" data-content="關於 : 漲跌幅<br><br>最新成交價 - 昨日收盤價格">
+                    <div class="tooltip" data-title="關於 : 漲跌幅" data-content="最新成交價 - 昨日收盤價格">
                         漲跌幅
                     </div>
                 </th>
-                <th>最新交易時間</th>
                 <th>
-                    <div class="tooltip" data-title="Delta值" data-content="關於 : Delta值<br><br>1. Delta = 標的物增加 1 點時, 選擇權增加的價格<br>2. 結算時, 進價內的機率<br>3. 買權: 越深價內則越接近 1, 越深價外則越接近 0, 定義價平為 0.5<br>4. 賣權: 越深價內則越接近 -1, 越深價外則越接近 0, 定義價平為 -0.5"> <!-- 必須和head style 裡面的變數一致 -->
+                    <div class="tooltip" data-title="關於 : 最新交易時間" data-content="上一筆交易的時間">
+                        最新交易時間
+                    </div>
+                </th>
+                <th>
+                    <div class="tooltip" data-title="關於 : Delta值" data-content="1. Delta = 標的物增加 1 點時, 選擇權增加的價格<br>2. 結算時, 進價內的機率<br>3. 買權: 越深價內則越接近 1, 越深價外則越接近 0, 定義價平為 0.5<br>4. 賣權: 越深價內則越接近 -1, 越深價外則越接近 0, 定義價平為 -0.5"> <!-- 必須和head style 裡面的變數一致 -->
                         Delta值
                     </div>
                 </th>
@@ -507,8 +519,9 @@
         // 動態更新剩餘天數
         function UpdateDaysToMaturity() {
             const ExpirationDate = new Date(ExpirationDateStr); // 到期日
-            const now = new Date(); // 當前時間
-            const timeDifference = ExpirationDate - now; // 時間差
+            //console.log(ExpirationDate)
+            const now = new Date(); // 當前時間 格式 = Thu Dec 26 2024 05:54:09 GMT+0800 (台北標準時間)
+            const timeDifference = ExpirationDate - now; // 時間差(毫秒數)
             const DaysToMaturity = Math.max(timeDifference / (1000 * 60 * 60 * 24), 0);
             document.getElementById('DaysToMaturity').textContent = DaysToMaturity;
 
@@ -517,9 +530,41 @@
 
             // 更新 HTML 元素內容
             ExpirationDateElement.textContent = ExpirationDate.toLocaleDateString("zh-TW"); // 顯示到期日
+            //console.log(ExpirationDateElement)
+            console.log(ExpirationDateElement.textContent)
             DaysToMaturityElement.textContent = DaysToMaturity; // 顯示剩餘天數
         }
 
+        document.addEventListener('DOMContentLoaded', () => {
+        const tooltip = document.getElementById('column-tooltip');
+        const daysToMaturityContainer = document.getElementById('DaysToMaturityContainer');
+
+        // 當滑鼠懸停時顯示提示框
+        daysToMaturityContainer.addEventListener('mouseover', (e) => {
+            const title = daysToMaturityContainer.getAttribute('data-title');
+            const content = daysToMaturityContainer.getAttribute('data-content');
+            if (title && content) {
+                tooltip.innerHTML = `
+                    <h3>${title}</h3>
+                    <p>${content}</p>
+                `;
+                tooltip.style.display = 'block';
+                tooltip.style.left = `${e.clientX + 10}px`;
+                tooltip.style.top = `${e.clientY + 10}px`;
+            }
+        });
+
+        // 當滑鼠移動時更新提示框位置
+        daysToMaturityContainer.addEventListener('mousemove', (e) => {
+            tooltip.style.left = `${e.clientX + 10}px`;
+            tooltip.style.top = `${e.clientY + 10}px`;
+        });
+
+        // 當滑鼠離開時隱藏提示框
+        daysToMaturityContainer.addEventListener('mouseout', () => {
+            tooltip.style.display = 'none';
+        });
+        });
         // 初次更新
         UpdateDaysToMaturity();
         // // 每 1,000 毫秒 更新
