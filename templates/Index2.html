@@ -125,31 +125,14 @@
             display: inline-block;
             cursor: pointer;
         }
+
         .tooltip .tooltiptext {
-            visibility: hidden;
-            width: 250px;
-            background-color: #555;
-            color: #fff;
-            text-align: left;
-            border-radius: 5px;
-            padding: 10px;
-            position: absolute;
-            z-index: 1;
-            top: 125%; /* 在目標下方顯示 */
-            left: 50% + 100px;
-            margin-left: -125px;
-            opacity: 0;
-            transition: opacity 0.3s;
-            font-size: 12px;
-        }
-        .tooltip:hover .tooltiptext {
-            visibility: visible;
-            opacity: 1;
+            display: none;
         }
         
         /* 新增的浮動提示框樣式 */
         #column-tooltip {
-            position: fixed;
+            position: absolute;
             background-color: rgba(0, 0, 0, 0.9);
             color: white;
             padding: 15px;
@@ -172,17 +155,6 @@
         #column-tooltip p {
             margin: 0;
             line-height: 1.4;
-        }
-
-        /* 調整表格列的hover效果 */
-        td:hover, th:hover {
-            background: rgba(241, 241, 241, 0.1);
-            cursor: pointer;
-        }
-
-        /* 移除原有的tr hover效果 */
-        tr:hover {
-            background: initial;
         }
     </style>
 </head>
@@ -223,71 +195,37 @@
         <thead>
             <tr>
                 <th>
-                    <div class="tooltip">
+                    <div class="tooltip" data-title="商品名稱" data-content="自交易當月起連續3個月份，另加上3月、6月、9月、12月中2個接續的季月，另除每月第1個星期三外，得於交易當週之星期三一般交易時段加掛次二週之星期三到期之契約">
                         商品名稱
-                        <span class="tooltiptext">
-                            關於 : 商品名稱<br><br>
-
-                            自交易當月起連續3個月份，另加上3月、6月、9月、12月中2個接續的季月，另除每月第1個星期三外，得於交易當週之星期三一般交易時段加掛次二週之星期三到期之契約
-                        </span>
                     </div>
                 </th>
                 <th>履約價</th>
                 <th>
-                    <div class="tooltip">
+                    <div class="tooltip" data-title="買賣權" data-content="C = Call, 買權<br>P = Put, 賣權">
                         買賣權
-                        <span class="tooltiptext">
-                            關於 : 買賣權<br><br>
-
-                            C = Call, 買權<br>
-                            P = Put, 賣權
-                        </span>
                     </div>
                 </th>
                 <th>買進價格</th>
                 <th>賣出價格</th>
                 <th>
-                    <div class="tooltip">
+                    <div class="tooltip" data-title="最新成交價" data-content="關於 : 最新成交價<br><br>上一筆交易的成交價">
                         最新成交價
-                        <span class="tooltiptext">
-                            關於 : 最新成交價<br><br>
-    
-                            上一筆交易的成交價
-                        </span>
                     </div>
                 </th>
                 <th>
-                    <div class="tooltip">
+                    <div class="tooltip" data-title="昨日收盤價格" data-content="關於 : 昨日收盤價格<br><br>昨日最後一筆交易的成交價">
                         昨日收盤價格
-                        <span class="tooltiptext">
-                            關於 : 昨日收盤價格<br><br>
-    
-                            昨日最後一筆交易的成交價
-                        </span>
                     </div>
                 </th>
                 <th>
-                    <div class="tooltip">
+                    <div class="tooltip" data-title="漲跌幅" data-content="關於 : 漲跌幅<br><br>最新成交價 - 昨日收盤價格">
                         漲跌幅
-                        <span class="tooltiptext">
-                            關於 : 漲跌幅<br><br>
-    
-                            最新成交價 - 昨日收盤價格
-                        </span>
                     </div>
                 </th>
                 <th>最新交易時間</th>
                 <th>
-                    <div class="tooltip"> <!-- 必須和head style 裡面的變數一致 -->
-                        Delta
-                        <span class="tooltiptext">
-                            關於 : Delta值<br><br>
-
-                            1. Delta = 標的物增加 1 點時, 選擇權增加的價格<br>
-                            2. 結算時, 進價內的機率<br>
-                            3. 買權: 越深價內則越接近 1, 越深價外則越接近 0, 定義價平為 0.5<br>
-                            4. 賣權: 越深價內則越接近 -1, 越深價外則越接近 0, 定義價平為 -0.5
-                        </span>
+                    <div class="tooltip" data-title="Delta值" data-content="關於 : Delta值<br><br>1. Delta = 標的物增加 1 點時, 選擇權增加的價格<br>2. 結算時, 進價內的機率<br>3. 買權: 越深價內則越接近 1, 越深價外則越接近 0, 定義價平為 0.5<br>4. 賣權: 越深價內則越接近 -1, 越深價外則越接近 0, 定義價平為 -0.5"> <!-- 必須和head style 裡面的變數一致 -->
+                        Delta值
                     </div>
                 </th>
             </tr>
@@ -389,10 +327,9 @@
             const header = document.querySelector(`thead th:nth-child(${columnIndex + 1})`);
             const tooltipDiv = header.querySelector('.tooltip');
             if (tooltipDiv) {
-                const tooltiptext = tooltipDiv.querySelector('.tooltiptext');
-                if (tooltiptext) {
-                    const title = tooltipDiv.textContent.trim();
-                    const content = tooltiptext.innerHTML.split('<br><br>')[1];
+                const title = tooltipDiv.dataset.title;
+                const content = tooltipDiv.dataset.content;
+                if (title && content) {
                     return { title, content };
                 }
             }
@@ -402,6 +339,7 @@
         // 為表格添加滑鼠事件監聽器
         document.addEventListener('DOMContentLoaded', () => {
             const table = document.querySelector('table');
+            const tooltip = document.getElementById('column-tooltip');
 
             // 當滑鼠移到表格單元格上時
             table.addEventListener('mouseover', (e) => {
@@ -412,8 +350,8 @@
                     
                     if (headerContent) {
                         tooltip.innerHTML = `
-                            <h3>${headerContent.title}</h3>
-                            <p>${headerContent.content}</p>
+                            <h3 style="color: #007BFF; margin: 0 0 8px 0; font-size: 16px;">${headerContent.title}</h3>
+                            <p style="margin: 0; line-height: 1.4; color: white; font-size: 14px;">${headerContent.content}</p>
                         `;
                         tooltip.style.display = 'block';
                     } else {
@@ -431,32 +369,53 @@
             });
         });
 
+        // 更新CSS樣式以確保tooltip的基本樣式一致
+        const styleSheet = document.createElement('style');
+        styleSheet.textContent = `
+            #column-tooltip {
+                position: absolute;
+                background-color: rgba(0, 0, 0, 0.9);
+                padding: 15px;
+                border-radius: 8px;
+                max-width: 300px;
+                box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+                pointer-events: none;
+                z-index: 10000;
+                border: 1px solid rgba(255, 255, 255, 0.2);
+            }
+        `;
+        document.head.appendChild(styleSheet);
+
         // 更新提示框位置並處理邊界情況
         document.addEventListener('mousemove', (e) => {
             if (tooltip.style.display === 'block') {
                 const padding = 15;
                 const tooltipRect = tooltip.getBoundingClientRect();
+
+                // 獲取滾動距離
+                const scrollX = window.pageXOffset || document.documentElement.scrollLeft;
+                const scrollY = window.pageYOffset || document.documentElement.scrollTop;
                 
                 // 計算新位置
-                let left = e.pageX + padding;
-                let top = e.pageY + padding;
+                let left = e.clientX + padding;
+                let top = e.clientY + padding;
 
                 // 檢查是否會超出視窗右邊界
                 if (left + tooltipRect.width > window.innerWidth) {
-                    left = e.pageX - tooltipRect.width - padding;
+                    left = e.clientX - tooltipRect.width - padding;
                 }
 
                 // 檢查是否會超出視窗下邊界
                 if (top + tooltipRect.height > window.innerHeight) {
-                    top = e.pageY - tooltipRect.height - padding;
+                    top = e.clientY - tooltipRect.height - padding;
                 }
 
                 // 確保提示框不會出現在負值位置
                 left = Math.max(padding, left);
                 top = Math.max(padding, top);
 
-                tooltip.style.left = `${left}px`;
-                tooltip.style.top = `${top}px`;
+                tooltip.style.left = `${left + scrollX}px`;
+                tooltip.style.top = `${top + scrollY}px`;
             }
         });
 
