@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>首頁</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background: #000000;
+            color: white;
+        }
+
+        header {
+            background: #000000;
+            color: white;
+            padding: 20px;
+            text-align: center;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            margin: 0;
+            font-size: 32px;
+        }
+
+        .container {
+            text-align: center;
+            padding: 50px;
+        }
+
+        .link-button {
+            display: inline-block;
+            margin: 20px;
+            padding: 15px 30px;
+            font-size: 18px;
+            font-weight: bold;
+            text-decoration: none;
+            color: white;
+            background: linear-gradient(45deg, #007BFF, #0056b3);
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+            transition: transform 0.2s, background 0.3s;
+        }
+
+        .link-button:hover {
+            background: linear-gradient(45deg, #0056b3, #003580);
+            transform: scale(1.1);
+        }
+
+        .link-button:active {
+            transform: scale(0.95);
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>歡迎來到GalaxyStock.ai</h1>
+    </header>
+    <div class="container">
+        <p>請選擇以下操作：</p>
+        <a href="Index.html" class="link-button">選擇權即時報價查詢</a>
+        <a href="#" class="link-button">其他功能 (待開發)</a>
+    </div>
+</body>
+</html>
