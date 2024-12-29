@@ -111,9 +111,17 @@ def get_spot_price_taifex():
            "AscDesc":"A"}
     res = r.post(url, json=payload)
     data = res.json()
-    spot_price = float(data['RtData']['QuoteList'][1]['CLastPrice'])  # 取第2筆資料
-    return spot_price
-    #return data
+
+    try:
+        # 確保數據不為空並可轉換為浮點數
+        spot_price_str = data['RtData']['QuoteList'][1]['CLastPrice']
+        if not spot_price_str or not spot_price_str.strip():
+            raise ValueError("Spot price data is empty or invalid.")
+        spot_price = float(spot_price_str)
+        return spot_price
+    except (IndexError, KeyError, ValueError) as e:
+        print(f"Error retrieving spot price: {e}")
+        return None  # 或設定為默認值，例如 return 0.0
 
 spot_price = get_spot_price_taifex() # 如果沒有資料 會回傳錯誤訊息
 print(f"台指期近月價格: {spot_price}")
@@ -124,7 +132,7 @@ def calculate_days_to_maturity(expiration_date):
     dt = expiration_date - today
     return max((dt.total_seconds()) / (24*60*60), 0)  # 確保剩餘天數不為負 且 資料型態type 為 float
 
-expiration_date = datetime(2025, 1, 2, 13, 30)  # 到期日
+expiration_date = datetime(2025, 1, 2, 13, 30) # 到期日 手動修改
 time_to_maturity_days = calculate_days_to_maturity(expiration_date)
 time_to_maturity = time_to_maturity_days / 365
 
@@ -155,8 +163,19 @@ def main():
     #time_to_maturity_days = 7  # 到期日剩餘天數（7天）
     #time_to_maturity = time_to_maturity_days / 365  # 轉換為年
 
+    # 爬取台指期現貨價格
+    spot_price = get_spot_price_taifex()
+    if spot_price is None:
+        print("Error: Unable to retrieve spot price. Exiting program.")
+        return  # 停止執行或根據需要進行其他處理
+    
     # 爬取選擇權數據
     df = fetch_options_data()
+
+    # 確保 df 不為空
+    if df.empty:
+        print("Error: No options data retrieved.")
+        return
 
     # 計算 Delta 並加入 DataFrame
     deltas = []
