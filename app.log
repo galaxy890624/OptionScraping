@@ -1,0 +1,2 @@
+2024-12-30 10:22:19,810 ERROR: Error in get_options_detail: Object of type time is not JSON serializable [in D:\python\OptionScraping\AppDetail.py:30]
+2024-12-30 10:22:56,005 ERROR: Error in get_options_detail: Object of type time is not JSON serializable [in D:\python\OptionScraping\AppDetail.py:30]

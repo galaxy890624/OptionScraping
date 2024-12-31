@@ -1,7 +1,7 @@
 # 套件匯入
 import requests as r
 import pandas as pd
-from math import log, sqrt # log 是以e為底
+from math import log, sqrt, exp # log 是以e為底
 from scipy.stats import norm
 from datetime import datetime, time, timedelta
 
@@ -21,6 +21,24 @@ def calculate_delta(spot_price, strike_price, time_to_maturity, risk_free_rate, 
         return norm.cdf(d1) - 1
     else:
         raise ValueError("option_type 必須為 'C' 或 'P'")
+    
+def calculate_gamma(spot_price, strike_price, time_to_maturity, risk_free_rate, volatility):
+    d1 = (log(spot_price / strike_price) + (risk_free_rate + 0.5 * volatility ** 2) * time_to_maturity) / (volatility * sqrt(time_to_maturity))
+    return norm.pdf(d1) / (spot_price * volatility * sqrt(time_to_maturity))
+
+def calculate_theta(spot_price, strike_price, time_to_maturity, risk_free_rate, volatility, option_type="C"):
+    d1 = (log(spot_price / strike_price) + (risk_free_rate + 0.5 * volatility ** 2) * time_to_maturity) / (volatility * sqrt(time_to_maturity))
+    d2 = d1 - volatility * sqrt(time_to_maturity)
+    if option_type == "C":  # Call 選擇權
+        return (-spot_price * norm.pdf(d1) * volatility / (2 * sqrt(time_to_maturity)) - risk_free_rate * strike_price * exp(-risk_free_rate * time_to_maturity) * norm.cdf(d2))
+    elif option_type == "P":  # Put 選擇權
+        return (-spot_price * norm.pdf(d1) * volatility / (2 * sqrt(time_to_maturity)) + risk_free_rate * strike_price * exp(-risk_free_rate * time_to_maturity) * norm.cdf(-d2))
+    else:
+        raise ValueError("option_type 必須為 'C' 或 'P'")
+    
+def calculate_vega(spot_price, strike_price, time_to_maturity, risk_free_rate, volatility):
+    d1 = (log(spot_price / strike_price) + (risk_free_rate + 0.5 * volatility ** 2) * time_to_maturity) / (volatility * sqrt(time_to_maturity))
+    return spot_price * norm.pdf(d1) * sqrt(time_to_maturity)
 
 # 判斷最近的交易日
 def get_last_trading_day(current_date):
@@ -187,6 +205,36 @@ def main():
 
     # 將 Delta 新增為 DataFrame 欄位
     df["Delta"] = deltas
+
+    # 計算 Gamma 並加入 DataFrame
+    gammas = []
+    for _, row in df.iterrows():
+        strike_price = float(row["履約價"])
+        gamma = calculate_gamma(spot_price, strike_price, time_to_maturity, risk_free_rate, volatility)
+        gammas.append(gamma)
+
+    # 將 Gamma 新增為 DataFrame 欄位
+    df["Gamma"] = gammas
+
+    # 計算 Theta 並加入 DataFrame
+    thetas = []
+    for _, row in df.iterrows():
+        strike_price = float(row["履約價"])
+        theta = calculate_theta(spot_price, strike_price, time_to_maturity, risk_free_rate, volatility, option_type)
+        thetas.append(theta)
+
+    # 將 Theta 新增為 DataFrame 欄位
+    df["Theta"] = thetas
+
+    # 計算 Vega 並加入 DataFrame
+    vegas = []
+    for _, row in df.iterrows():
+        strike_price = float(row["履約價"])
+        vega = calculate_gamma(spot_price, strike_price, time_to_maturity, risk_free_rate, volatility)
+        vegas.append(vega)
+
+    # 將 Gamma 新增為 DataFrame 欄位
+    df["Vega"] = vegas
 
     # 計算漲跌幅 並加入 DataFrame
     difference_prices = []

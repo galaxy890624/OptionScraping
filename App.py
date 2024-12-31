@@ -1,6 +1,6 @@
 from flask import Flask, jsonify, request, render_template
 from flask_cors import CORS
-from Delta import fetch_options_data, get_spot_price_taifex, calculate_delta, current_time, datetime, spot_price, calculate_days_to_maturity, volatility
+from Delta import fetch_options_data, get_spot_price_taifex, calculate_delta, calculate_gamma, calculate_theta, calculate_vega, current_time, datetime, spot_price, calculate_days_to_maturity, volatility
 
 app = Flask(__name__)
 CORS(app)
@@ -36,6 +36,33 @@ def get_options():
             deltas.append(delta)
 
         df["Delta"] = deltas
+
+        #計算 Gamma
+        gammas = []
+        for _, row in df.iterrows():
+            strike_price = float(row["履約價"])
+            gamma = calculate_gamma(spot_price, strike_price, time_to_maturity, risk_free_rate, volatility)
+            gammas.append(gamma)
+
+        df["Gamma"] = gammas
+
+        #計算 Theta
+        thetas = []
+        for _, row in df.iterrows():
+            strike_price = float(row["履約價"])
+            theta = calculate_theta(spot_price, strike_price, time_to_maturity, risk_free_rate, volatility, option_type)
+            thetas.append(theta)
+        
+        df["Theta"] = thetas
+
+        #計算 Vega
+        vegas = []
+        for _, row in df.iterrows():
+            strike_price = float(row["履約價"])
+            vega = calculate_gamma(spot_price, strike_price, time_to_maturity, risk_free_rate, volatility)
+            vegas.append(vega)
+        
+        df["Vega"] = vegas
 
         difference_prices = []
         for _, row in df.iterrows():
