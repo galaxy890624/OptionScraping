@@ -240,6 +240,21 @@
                         Delta值
                     </div>
                 </th>
+                <th>
+                    <div class="tooltip" data-title="關於 : Gamma值" data-content="1. Delta = 標的物增加 1 點時, 選擇權增加的價格<br>2. 結算時, 進價內的機率<br>3. 買權: 越深價內則越接近 1, 越深價外則越接近 0, 定義價平為 0.5<br>4. 賣權: 越深價內則越接近 -1, 越深價外則越接近 0, 定義價平為 -0.5"> <!-- 必須和head style 裡面的變數一致 -->
+                        Gamma值
+                    </div>
+                </th>
+                <th>
+                    <div class="tooltip" data-title="關於 : Theta值" data-content="1. Delta = 標的物增加 1 點時, 選擇權增加的價格<br>2. 結算時, 進價內的機率<br>3. 買權: 越深價內則越接近 1, 越深價外則越接近 0, 定義價平為 0.5<br>4. 賣權: 越深價內則越接近 -1, 越深價外則越接近 0, 定義價平為 -0.5"> <!-- 必須和head style 裡面的變數一致 -->
+                        Theta值
+                    </div>
+                </th>
+                <th>
+                    <div class="tooltip" data-title="關於 : Vega值" data-content="1. Delta = 標的物增加 1 點時, 選擇權增加的價格<br>2. 結算時, 進價內的機率<br>3. 買權: 越深價內則越接近 1, 越深價外則越接近 0, 定義價平為 0.5<br>4. 賣權: 越深價內則越接近 -1, 越深價外則越接近 0, 定義價平為 -0.5"> <!-- 必須和head style 裡面的變數一致 -->
+                        Vega值
+                    </div>
+                </th>
             </tr>
         </thead>
         <tbody id="dataTable">
@@ -467,6 +482,9 @@
                         <td>${option["漲跌幅"] || "-"}</td>
                         <td>${option["最新交易時間64位"] || "-"}</td>
                         <td>${option["Delta"]}</td>
+                        <td>${option["Gamma"]}</td>
+                        <td>${option["Theta"]}</td>
+                        <td>${option["Vega"]}</td>
                     `; // 如果沒有資料時 回傳 "-"
 
                     // 根據漲跌幅設置文字顏色
