@@ -171,7 +171,11 @@
     <header>
         <h1>選擇權即時報價查詢</h1>
         <p>伺服器當前時間: <span id="CurrentTime">{{ current_time }}</span></p>
-        <p>台指期近月價格: <span id="SpotPrice">加載中...</span></p>
+        <p>
+            <div class="tooltip" id="SpotPriceContainer" data-title="關於 : 台指期近月價格" data-content="">
+                台指期近月價格: <span id="SpotPrice">加載中...</span>
+            </div>
+        </p>
         <p>
             <div class="tooltip" id="DaysToMaturityContainer" data-title="關於 : 結算日" data-content="1. 月選在第3個星期3 13:30結算<br>2. 週選在每個星期3 13:30結算<br>3. 結算價 = 13:00 ~ 13:25, 每5秒有1個價, 共300個價格, 13:25 ~ 13:30的最後一筆收盤指數, 共1個價格, 總共301個價格, 取平均">
                 
@@ -552,6 +556,37 @@
             console.log(ExpirationDateElement.textContent)
             DaysToMaturityElement.textContent = DaysToMaturity; // 顯示剩餘天數
         }
+
+        document.addEventListener('DOMContentLoaded', () => {
+        const tooltip = document.getElementById('column-tooltip');
+        const SpotPriceContainer = document.getElementById('SpotPriceContainer');
+
+        // 當滑鼠懸停時顯示提示框
+        SpotPriceContainer.addEventListener('mouseover', (e) => {
+            const title = SpotPriceContainer.getAttribute('data-title');
+            const content = SpotPriceContainer.getAttribute('data-content');
+            if (title && content) {
+                tooltip.innerHTML = `
+                    <h3>${title}</h3>
+                    <p>${content}</p>
+                `;
+                tooltip.style.display = 'block';
+                tooltip.style.left = `${e.clientX + 10}px`;
+                tooltip.style.top = `${e.clientY + 10}px`;
+            }
+        });
+
+        // 當滑鼠移動時更新提示框位置
+        SpotPriceContainer.addEventListener('mousemove', (e) => {
+            tooltip.style.left = `${e.clientX + 10}px`;
+            tooltip.style.top = `${e.clientY + 10}px`;
+        });
+
+        // 當滑鼠離開時隱藏提示框
+        SpotPriceContainer.addEventListener('mouseout', () => {
+            tooltip.style.display = 'none';
+        });
+        });
 
         document.addEventListener('DOMContentLoaded', () => {
         const tooltip = document.getElementById('column-tooltip');

@@ -5,13 +5,13 @@ from math import log, sqrt, exp # log 是以e為底
 from scipy.stats import norm
 from datetime import datetime, time, timedelta
 
-# Black-Scholes 模型計算 Delta 的函數
 # spot_price = 即時價格
 # strike_price = 履約價
 # risk_free_rate = 無風險利率(連續複利)
 # volatility = 隱含波動率
 # time_to_maturity = 到期時間
 
+# Black-Scholes 模型計算 Delta 的函數
 def calculate_delta(spot_price, strike_price, time_to_maturity, risk_free_rate, volatility, option_type="C"):
     d1 = (log(spot_price / strike_price) + (risk_free_rate + 0.5 * volatility ** 2) * time_to_maturity) / (volatility * sqrt(time_to_maturity))
     #d2 = d1 - volatility * sqrt(time_to_maturity)
@@ -21,11 +21,13 @@ def calculate_delta(spot_price, strike_price, time_to_maturity, risk_free_rate, 
         return norm.cdf(d1) - 1
     else:
         raise ValueError("option_type 必須為 'C' 或 'P'")
-    
+
+# Black-Scholes 模型計算 Gamma 的函數
 def calculate_gamma(spot_price, strike_price, time_to_maturity, risk_free_rate, volatility):
     d1 = (log(spot_price / strike_price) + (risk_free_rate + 0.5 * volatility ** 2) * time_to_maturity) / (volatility * sqrt(time_to_maturity))
     return norm.pdf(d1) / (spot_price * volatility * sqrt(time_to_maturity))
 
+# Black-Scholes 模型計算 Theta 的函數
 def calculate_theta(spot_price, strike_price, time_to_maturity, risk_free_rate, volatility, option_type="C"):
     d1 = (log(spot_price / strike_price) + (risk_free_rate + 0.5 * volatility ** 2) * time_to_maturity) / (volatility * sqrt(time_to_maturity))
     d2 = d1 - volatility * sqrt(time_to_maturity)
@@ -36,9 +38,11 @@ def calculate_theta(spot_price, strike_price, time_to_maturity, risk_free_rate, 
     else:
         raise ValueError("option_type 必須為 'C' 或 'P'")
     
+# Black-Scholes 模型計算 Vega 的函數
 def calculate_vega(spot_price, strike_price, time_to_maturity, risk_free_rate, volatility):
     d1 = (log(spot_price / strike_price) + (risk_free_rate + 0.5 * volatility ** 2) * time_to_maturity) / (volatility * sqrt(time_to_maturity))
     return spot_price * norm.pdf(d1) * sqrt(time_to_maturity)
+
 
 # 判斷最近的交易日
 def get_last_trading_day(current_date):
@@ -150,7 +154,7 @@ def calculate_days_to_maturity(expiration_date):
     dt = expiration_date - today
     return max((dt.total_seconds()) / (24*60*60), 0)  # 確保剩餘天數不為負 且 資料型態type 為 float
 
-expiration_date = datetime(2025, 1, 2, 13, 30) # 到期日 手動修改
+expiration_date = datetime(2025, 1, 8, 13, 30) # 到期日 手動修改
 time_to_maturity_days = calculate_days_to_maturity(expiration_date)
 time_to_maturity = time_to_maturity_days / 365
 
@@ -230,7 +234,7 @@ def main():
     vegas = []
     for _, row in df.iterrows():
         strike_price = float(row["履約價"])
-        vega = calculate_gamma(spot_price, strike_price, time_to_maturity, risk_free_rate, volatility)
+        vega = calculate_gamma(spot_price, strike_price, time_to_maturity, risk_free_rate, volatility * 100)
         vegas.append(vega)
 
     # 將 Gamma 新增為 DataFrame 欄位
