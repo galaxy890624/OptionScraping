@@ -172,7 +172,7 @@
         <h1>選擇權即時報價查詢</h1>
         <p>伺服器當前時間: <span id="CurrentTime">{{ current_time }}</span></p>
         <p>
-            <div class="tooltip" id="SpotPriceContainer" data-title="關於 : 台指期近月價格" data-content="">
+            <div class="tooltip" id="SpotPriceContainer" data-title="關於 : 台指期近月價格" data-content="標的物為加權指數">
                 台指期近月價格: <span id="SpotPrice">加載中...</span>
             </div>
         </p>
@@ -559,12 +559,12 @@
 
         document.addEventListener('DOMContentLoaded', () => {
         const tooltip = document.getElementById('column-tooltip');
-        const SpotPriceContainer = document.getElementById('SpotPriceContainer');
+        const spotPriceContainer = document.getElementById('SpotPriceContainer'); // 第一個字不可大寫
 
         // 當滑鼠懸停時顯示提示框
-        SpotPriceContainer.addEventListener('mouseover', (e) => {
-            const title = SpotPriceContainer.getAttribute('data-title');
-            const content = SpotPriceContainer.getAttribute('data-content');
+        spotPriceContainer.addEventListener('mouseover', (e) => {
+            const title = spotPriceContainer.getAttribute('data-title');
+            const content = spotPriceContainer.getAttribute('data-content');
             if (title && content) {
                 tooltip.innerHTML = `
                     <h3>${title}</h3>
@@ -577,13 +577,13 @@
         });
 
         // 當滑鼠移動時更新提示框位置
-        SpotPriceContainer.addEventListener('mousemove', (e) => {
+        spotPriceContainer.addEventListener('mousemove', (e) => {
             tooltip.style.left = `${e.clientX + 10}px`;
             tooltip.style.top = `${e.clientY + 10}px`;
         });
 
         // 當滑鼠離開時隱藏提示框
-        SpotPriceContainer.addEventListener('mouseout', () => {
+        spotPriceContainer.addEventListener('mouseout', () => {
             tooltip.style.display = 'none';
         });
         });
