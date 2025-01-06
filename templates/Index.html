@@ -4,159 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>選擇權即時報價查詢</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif; /*會依順序字型名稱去找循並套用使用者電腦內擁有的該字型,若有則套用,若無則找下一個*/
-            margin: 0;
-            padding: 0;
-            background: #000000;
-        }
-
-        /* 自定義游標光暈 */
-        #cursor-glow {
-            position: fixed;
-            pointer-events: none;
-            z-index: 9999;
-            mix-blend-mode: screen;
-        }
-
-        /* 星星樣式 */
-        .star {
-            position: fixed;
-            pointer-events: none;
-            width: 4px;
-            height: 4px;
-            background: white;
-            border-radius: 50%;
-            z-index: 9998;
-            animation: starFade 1s ease-out forwards;
-        }
-
-        @keyframes starFade {
-            0% {
-                transform: scale(1) rotate(0deg);
-                opacity: 1;
-            }
-            100% {
-                transform: scale(0) rotate(180deg);
-                opacity: 0;
-            }
-        }
-
-        /* 星星容器 */
-        #stars-container {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            pointer-events: none;
-            z-index: 9998;
-        }
-
-        /* 原有的樣式 */
-        header {
-            background: #000000;
-            color: white;
-            padding: 20px;
-            text-align: center;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-        }
-        h1 {
-            margin: 0;
-            font-size: 24px;
-        }
-        button {
-            margin: 20px auto;
-            display: block;
-            padding: 10px 20px;
-            font-size: 16px;
-            cursor: pointer;
-            background: linear-gradient(45deg, #007BFF, #0056b3);
-            color: white;
-            border: none;
-            border-radius: 5px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            transition: transform 0.2s, background 0.3s;
-        }
-        button:hover {
-            background: linear-gradient(45deg, #0056b3, #003580);
-            transform: scale(1.05);
-        }
-        button:active {
-            transform: scale(0.95);
-        }
-        table {
-            width: 90%;
-            margin: 20px auto;
-            border-collapse: collapse;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-        }
-        th, td {
-            border: 1px solid #ddd;
-            padding: 12px;
-            text-align: center;
-        }
-        th {
-            background: #000000;
-            color: white;
-            font-weight: bold;
-        }
-        /* Put列 的 style */
-        tr:nth-child(even) {
-            background: #1f1f1f;
-        }
-        tr:hover {
-            background: #f1f1f1;
-            cursor: pointer;
-        }
-        #loading {
-            display: none;
-            text-align: center;
-            margin: 20px 0;
-        }
-        #loading img {
-            width: 50px;
-        }
-
-        /* Tooltip 样式 */
-        .tooltip {
-            position: relative;
-            display: inline-block;
-            cursor: pointer;
-        }
-
-        .tooltip .tooltiptext {
-            display: none;
-        }
-        
-        /* 新增的浮動提示框樣式 */
-        #column-tooltip {
-            position: absolute;
-            background-color: rgba(0, 0, 0, 0.9);
-            color: white;
-            padding: 15px;
-            border-radius: 8px;
-            font-size: 14px;
-            max-width: 300px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
-            pointer-events: none;
-            z-index: 10000;
-            display: none;
-            border: 1px solid rgba(255, 255, 255, 0.2);
-        }
-
-        #column-tooltip h3 {
-            margin: 0 0 8px 0;
-            color: #007BFF;
-            font-size: 16px;
-        }
-
-        #column-tooltip p {
-            margin: 0;
-            line-height: 1.4;
-        }
-    </style>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/styles.css') }}">
 </head>
 <body>
     <!-- 新增的星星容器 -->
@@ -265,91 +113,8 @@
             <!-- 資料將由 JavaScript 動態插入 -->
         </tbody>
     </table>
+    <script src="{{ url_for('static', filename='js/effects.js') }}"></script>
     <script>
-        // 游標光暈效果
-        const cursorGlow = document.getElementById('cursor-glow');
-        
-        // 創建 SVG 元素
-        const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
-        svg.setAttribute("width", "100");
-        svg.setAttribute("height", "100");
-        
-        // 創建三個圓形，形成多層光暈效果
-        const circles = [
-            {radius: 40, color: "rgba(0, 128, 255, 0.1)"},
-            {radius: 20, color: "rgba(0, 128, 255, 0.2)"},
-            {radius: 5, color: "rgba(255, 255, 255, 0.5)"}
-        ];
-        
-        circles.forEach(({radius, color}) => {
-            const circle = document.createElementNS("http://www.w3.org/2000/svg", "circle");
-            circle.setAttribute("cx", "50");
-            circle.setAttribute("cy", "50");
-            circle.setAttribute("r", radius.toString());
-            circle.setAttribute("fill", color);
-            circle.setAttribute("filter", "blur(3px)");
-            svg.appendChild(circle);
-        });
-        
-        cursorGlow.appendChild(svg);
-
-        // 星星軌跡效果
-        const starsContainer = document.getElementById('stars-container');
-        let lastStarTime = 0;
-        const starInterval = 20; // 每 20ms 產生一顆星星
-
-        document.addEventListener('mousemove', (e) => {
-            // 更新光暈位置
-            cursorGlow.style.left = (e.clientX - 50) + 'px';
-            cursorGlow.style.top = (e.clientY - 50) + 'px';
-
-            // 創建星星
-            const currentTime = Date.now();
-            if (currentTime - lastStarTime > starInterval) {
-                createStar(e.clientX, e.clientY);
-                lastStarTime = currentTime;
-            }
-
-            // 表格 如果tooltip是可見的,就更新它的位置
-            if (tooltip.style.display === 'block') {
-                tooltip.style.left = e.pageX + 10 + 'px';
-                tooltip.style.top = e.pageY + 10 + 'px';
-            }
-        });
-
-        function createStar(x, y) {
-            const star = document.createElement('div');
-            star.className = 'star';
-            
-            // 隨機大小
-            const size = Math.random() * 3 + 2;
-            star.style.width = `${size}px`;
-            star.style.height = `${size}px`;
-            
-            // 隨機起始位置（在游標周圍小範圍內）
-            const offsetX = (Math.random() - 0.5) * 10;
-            const offsetY = (Math.random() - 0.5) * 10;
-            star.style.left = (x + offsetX) + 'px';
-            star.style.top = (y + offsetY) + 'px';
-            
-            // 隨機顏色（藍白色系）
-            const hue = Math.random() * 40 + 200; // 200-240 之間的色相值
-            const saturation = Math.random() * 50 + 50; // 50-100% 的飽和度
-            const lightness = Math.random() * 30 + 70; // 70-100% 的亮度
-            star.style.background = `hsl(${hue}, ${saturation}%, ${lightness}%)`;
-            
-            // 添加模糊效果
-            star.style.filter = 'blur(0.5px)';
-            
-            // 添加到容器
-            starsContainer.appendChild(star);
-            
-            // 動畫結束後移除元素
-            setTimeout(() => {
-                star.remove();
-            }, 1000);
-        }
-
         // 新增的提示框功能
         const tooltip = document.getElementById('column-tooltip');
         
@@ -400,6 +165,7 @@
             });
         });
 
+        /*
         // 更新CSS樣式以確保tooltip的基本樣式一致
         const styleSheet = document.createElement('style');
         styleSheet.textContent = `
@@ -416,7 +182,8 @@
             }
         `;
         document.head.appendChild(styleSheet);
-
+        */
+       
         // 更新提示框位置並處理邊界情況
         document.addEventListener('mousemove', (e) => {
             if (tooltip.style.display === 'block') {

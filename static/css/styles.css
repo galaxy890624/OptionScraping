@@ -1,12 +1,4 @@
-/* 基本樣式 */
-body {
-    font-family: Arial, sans-serif;
-    margin: 0;
-    padding: 0;
-    background: #000000;
-}
-
-/* 游標光暈效果 */
+/* 自定義游標光暈 */
 #cursor-glow {
     position: fixed;
     pointer-events: none;
@@ -48,7 +40,7 @@ body {
     z-index: 9998;
 }
 
-/* 頁面元素樣式 */
+/* 原有的樣式 */
 header {
     background: #000000;
     color: white;
@@ -60,6 +52,13 @@ header {
 h1 {
     margin: 0;
     font-size: 24px;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background: #000000;
 }
 
 button {
@@ -85,7 +84,6 @@ button:active {
     transform: scale(0.95);
 }
 
-/* 表格樣式 */
 table {
     width: 90%;
     margin: 20px auto;
@@ -124,7 +122,7 @@ tr:hover {
     width: 50px;
 }
 
-/* Tooltip 樣式 */
+/* Tooltip 样式 */
 .tooltip {
     position: relative;
     display: inline-block;
