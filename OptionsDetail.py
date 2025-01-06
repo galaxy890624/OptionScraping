@@ -2,11 +2,11 @@ import requests
 import pandas as pd
 import logging
 from typing import Optional
-from datetime import datetime
-import pytz
+from datetime import datetime, time
 
 logger = logging.getLogger(__name__)
 
+start_time = datetime.time()
 def fetch_options_detail_data() -> Optional[pd.DataFrame]:
     """
     獲取期權交易詳情數據
@@ -61,7 +61,10 @@ def fetch_options_detail_data() -> Optional[pd.DataFrame]:
             "TimeOfTrades": "交易時間",
         }
         df.rename(columns=column_mapping, inplace=True)
-        
+
+        # 篩選商品名稱為 TXO 且 到期月份(週) 為 202501W2 的資料
+        df = df[(df["商品名稱"] == "TXO") & (df["到期月份(週)"] == "202501W2")]
+
         # 調整列順序
         column_order = ["商品名稱", "到期月份(週)", "履約價", "買賣權", "成交價", "成交量", "交易日期", "交易時間"]
         df = df[column_order]
@@ -78,3 +81,8 @@ def fetch_options_detail_data() -> Optional[pd.DataFrame]:
     except Exception as e:
         logger.error(f"Unexpected error: {str(e)}")
         return None
+    
+end_time = datetime.time()
+execute_time = end_time - start_time
+print(fetch_options_detail_data())
+print(execute_time)

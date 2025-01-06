@@ -34,11 +34,19 @@ print(today)
 # 計算從起點到當前時間的天數
 time_difference = now - epoch
 start_date = (epoch - epoch).days + 1
-days_since_epoch = time_difference.days + 1 # 直接以天為單位
+days_since_epoch = time_difference.days + 1 # 以 1天 為單位
+seconds_since_epoch = int(time_difference.total_seconds()) # 以 1秒 為單位
+nanoseconds_since_epoch = int(time_difference.total_seconds() * 1e9)
 
-# 打印 64 位時間戳（天級）
+# 打印起點
 print("64 位時間戳起點 (天級):", start_date) # 0001-01-01
+# 打印 64 位時間戳（天級）
 print("64 位時間戳（天級）:", days_since_epoch)
+# 打印 64 位時間戳（秒級）
+print("64 位時間戳（秒級）:", seconds_since_epoch)
+# 打印 64 位時間戳（奈秒）
+print("64 位時間戳（奈秒）:", nanoseconds_since_epoch)
+
 '''
 每400年有97個閏年 = 146,097天
 如果2001-01-01 是星期1
