@@ -159,3 +159,33 @@ tr:hover {
     margin: 0;
     line-height: 1.4;
 }
+
+/* container置中 */
+.container {
+    text-align: center;
+    padding: 50px;
+}
+
+/* 超連結按鈕 */
+.link-button {
+    display: inline-block;
+    margin: 20px;
+    padding: 15px 30px;
+    font-size: 18px;
+    font-weight: bold;
+    text-decoration: none;
+    color: white;
+    background: linear-gradient(45deg, #007BFF, #0056b3);
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+    transition: transform 0.2s, background 0.3s;
+}
+
+.link-button:hover {
+    background: linear-gradient(45deg, #0056b3, #003580);
+    transform: scale(1.1);
+}
+
+.link-button:active {
+    transform: scale(0.95);
+}
