@@ -17,10 +17,19 @@ app.logger.addHandler(handler)
 def home():
     return render_template("OptionsDetail.html")
 
+'''
+使用者就可以通過 URL 來指定參數，比如:
+http://127.0.0.1:5000/api/options_detail?product_code=TXO&contract_month=202501W3
+'''
+
 @app.route('/api/options_detail', methods=['GET'])
 def get_options_detail():
     try:
-        df = fetch_options_detail_data()
+        # 設置預設值
+        product_code = "TXO"  # 預設商品代碼
+        contract_month = "202501W2"  # 預設到期月份
+        
+        df = fetch_options_detail_data(product_code, contract_month)
         if df is None or df.empty:
             app.logger.error("No data received from options detail API")
             return jsonify({"error": "無法獲取期權數據"}), 500

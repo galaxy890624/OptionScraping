@@ -10,7 +10,7 @@ logger = logging.getLogger(__name__)
 
 start_time = datetime.now()
 
-def fetch_filtered_options_data(product_code: str, contract_month: str) -> Optional[pd.DataFrame]:
+def fetch_options_detail_data(product_code: str, contract_month: str) -> Optional[pd.DataFrame]:
     """
     獲取並過濾期權交易詳情數據，僅保留指定商品名稱和到期月份的資料。
     
@@ -85,7 +85,7 @@ if __name__ == "__main__":
     contract_month = "202501W2"
     
     # 獲取篩選後的數據
-    df = fetch_filtered_options_data(product_code, contract_month)
+    df = fetch_options_detail_data(product_code, contract_month)
     
     if df is not None:
         print(df)
@@ -95,3 +95,23 @@ if __name__ == "__main__":
 end_time = datetime.now()
 execute_time = end_time - start_time
 print("執行時間 =", execute_time)
+
+'''
+PS D:\python\OptionScraping> python OptionsDetail.py    
+INFO:__main__:Successfully fetched and processed 338663 records
+       商品名稱   到期月份(週)    履約價 買賣權  成交價  成交量        交易日期      交易時間
+1267    TXO  202501W2  20500   P  1.1    1  2025-01-03  08:49:17
+1268    TXO  202501W2  20500   P  1.1    1  2025-01-03  08:49:17
+1269    TXO  202501W2  20500   P  0.9    5  2025-01-03  09:15:21
+1270    TXO  202501W2  20500   P  0.9    5  2025-01-03  09:15:21
+1271    TXO  202501W2  20500   P  0.9   14  2025-01-03  09:20:39
+...     ...       ...    ...  ..  ...  ...         ...       ...
+380766  TXO  202501W2  25600   C  0.1    1  2025-01-03  13:27:40
+380767  TXO  202501W2  25600   C  0.2    1  2025-01-03  13:34:29
+380768  TXO  202501W2  25600   C  0.2    1  2025-01-03  13:34:29
+380791  TXO  202501W2  25700   C  9.9    1  2025-01-03  09:08:46
+380792  TXO  202501W2  25700   C  9.9    1  2025-01-03  09:08:46
+
+[338663 rows x 8 columns]
+執行時間 = 0:02:08.659247
+'''
