@@ -12,7 +12,7 @@
     pointer-events: none;
     width: 4px;
     height: 4px;
-    background: white;
+    background: #ffffff;
     border-radius: 50%;
     z-index: 9998;
     animation: starFade 1s ease-out forwards;
@@ -43,7 +43,7 @@
 /* 原有的樣式 */
 header {
     background: #000000;
-    color: white;
+    color: #ffffff;
     padding: 20px;
     text-align: center;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
@@ -67,8 +67,8 @@ button {
     padding: 10px 20px;
     font-size: 16px;
     cursor: pointer;
-    background: linear-gradient(45deg, #007BFF, #0056b3);
-    color: white;
+    background: linear-gradient(45deg, #007bff, #0056b3);
+    color: #ffffff;
     border: none;
     border-radius: 5px;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
@@ -92,14 +92,14 @@ table {
 }
 
 th, td {
-    border: 1px solid #ddd;
+    border: 1px solid #dddddd;
     padding: 12px;
     text-align: center;
 }
 
 th {
     background: #000000;
-    color: white;
+    color: #ffffff;
     font-weight: bold;
 }
 
@@ -137,7 +137,7 @@ tr:hover {
 #column-tooltip {
     position: absolute;
     background-color: rgba(0, 0, 0, 0.9);
-    color: white;
+    color: #ffffff;
     padding: 15px;
     border-radius: 8px;
     font-size: 14px;
@@ -151,7 +151,7 @@ tr:hover {
 
 #column-tooltip h3 {
     margin: 0 0 8px 0;
-    color: #007BFF;
+    color: #007bff;
     font-size: 16px;
 }
 
@@ -162,30 +162,46 @@ tr:hover {
 
 /* container置中 */
 .container {
-    text-align: center;
+    text-align: left;
     padding: 50px;
 }
 
 /* 超連結按鈕 */
 .link-button {
+    position: relative;
     display: inline-block;
-    margin: 20px;
-    padding: 15px 30px;
-    font-size: 18px;
-    font-weight: bold;
     text-decoration: none;
-    color: white;
-    background: linear-gradient(45deg, #007BFF, #0056b3);
-    border-radius: 10px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
-    transition: transform 0.2s, background 0.3s;
+    color: #cccccc; /* 預設為淺灰色 */
+    font-size: 16px; /* 字體大小 */
+    padding: 5px 0px; /* 按鈕上下間距 */
+    margin: 10px;
+    border: none;
+    background: none;
+    cursor: pointer;
+    transition: color 0.3s ease; /* 顏色平滑過渡 */
 }
 
 .link-button:hover {
-    background: linear-gradient(45deg, #0056b3, #003580);
-    transform: scale(1.1);
+    color: #ffffff;
+    transform: scale(1.1); /* 放大效果 */
 }
 
 .link-button:active {
     transform: scale(0.95);
 }
+
+/* 底線動畫 */
+.link-button::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 0;
+    height: 2px;
+    background: #ffffff; /* 底線顏色 */
+    transition: width 0.3s ease; /* 動畫效果 */
+  }
+
+  .link-button:hover::after {
+    width: 100%; /* 底線展開 */
+  }
