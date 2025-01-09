@@ -99,7 +99,7 @@ def fetch_options_data():
         "SymbolType": "O",
         "KindID": "1",
         "CID": "TXO",
-        "ExpireMonth": "202501W2",  # 替換為你需要的到期月份 格式 = 202406W4(for週選); 202407(for月選)
+        "ExpireMonth": "202501",  # 替換為你需要的到期月份 格式 = 202406W4(for週選); 202407(for月選)
         "RowSize": "全部",
         "PageNo": "",
         "SortColumn": "",
@@ -154,7 +154,7 @@ def calculate_days_to_maturity(expiration_date):
     dt = expiration_date - today
     return max((dt.total_seconds()) / (24*60*60), 0)  # 確保剩餘天數不為負 且 資料型態type 為 float
 
-expiration_date = datetime(2025, 1, 8, 13, 30) # 到期日 手動修改
+expiration_date = datetime(2025, 1, 15, 13, 30) # 到期日 手動修改
 time_to_maturity_days = calculate_days_to_maturity(expiration_date)
 time_to_maturity = time_to_maturity_days / 365
 

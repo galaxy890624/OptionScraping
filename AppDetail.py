@@ -27,7 +27,7 @@ def get_options_detail():
     try:
         # 設置預設值
         product_code = "TXO"  # 預設商品代碼
-        contract_month = "202501W2"  # 預設到期月份
+        contract_month = "202501"  # 預設到期月份
         
         df = fetch_options_detail_data(product_code, contract_month)
         if df is None or df.empty:

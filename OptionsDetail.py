@@ -82,7 +82,7 @@ def fetch_options_detail_data(product_code: str, contract_month: str) -> Optiona
 if __name__ == "__main__":
     # 設置篩選條件
     product_code = "TXO"
-    contract_month = "202501W2"
+    contract_month = "202501"
     
     # 獲取篩選後的數據
     df = fetch_options_detail_data(product_code, contract_month)
