@@ -8,7 +8,7 @@ CORS(app)
 # 首頁路由，渲染模板
 @app.route('/Index') # http://127.0.0.1:5000/Index
 def home():
-    expiration_date = datetime(2025, 1, 15, 13, 30) # 到期日 手動修改
+    expiration_date = datetime(2025, 1, 22, 13, 30) # 到期日 手動修改
     current_time = datetime.now().strftime("%Y/%m/%d %H:%M:%S")  # 格式化當前時間
     return render_template('Index.html', current_time=current_time, expiration_date=expiration_date.strftime("%Y-%m-%d %H:%M:%S"))
 
@@ -24,7 +24,7 @@ def get_options():
 
         # 計算 Delta
         risk_free_rate = 0.02  # 無風險利率
-        expiration_date = datetime(2025, 1, 15, 13, 30) # 到期日 手動修改
+        expiration_date = datetime(2025, 1, 22, 13, 30) # 到期日 手動修改
         time_to_maturity_days = calculate_days_to_maturity(expiration_date)
         time_to_maturity = time_to_maturity_days / 365
 
@@ -104,7 +104,7 @@ def get_spot_price():
 @app.route('/api/time_to_maturity', methods=['GET'])
 def get_time_to_maturity():
     try:
-        expiration_date = datetime(2025, 1, 15, 13, 30) # 到期日 手動修改
+        expiration_date = datetime(2025, 1, 22, 13, 30) # 到期日 手動修改
         time_to_maturity_days = calculate_days_to_maturity(expiration_date)
         return jsonify({"time_to_maturity_days": time_to_maturity_days})
     except Exception as e:
