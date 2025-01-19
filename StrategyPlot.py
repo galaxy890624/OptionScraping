@@ -21,18 +21,20 @@ def black_scholes(S, K, T, r, sigma, option_type="call"):
 無風險利率 https://www.cnyes.com/bond/intLoan1.aspx
 波動率 https://mis.taifex.com.tw/futures/VolatilityQuotes/
 '''
-S_range = np.linspace(23000, 25000, 500)  # 標的價格範圍
+S_range = np.linspace(23000, 25000, 2001)  # 標的價格範圍
 K = 24000  # 履約價格
 r = 0.015  # 無風險利率
 sigma = 0.2  # 年化波動率
 
+# 獲取當前時間（只獲取1次）
+current_time = datetime.now()
 
 # 剩餘時間（以年為單位）
 def calculate_time_to_maturity(expiration_date):
-    current_date = datetime(2025, 1, 19, 0, 0)
-    expiration_date = datetime.strptime(expiration_date, "%Y-%m-%dT%H:%M")
-    delta = (expiration_date - current_date).total_seconds()
-    return delta / (365.25 * 24 * 3600)
+    if isinstance(expiration_date, str):
+        expiration_date = datetime.strptime(expiration_date, "%Y-%m-%dT%H:%M")
+    delta = (expiration_date - current_time).total_seconds() # 時間差 的 秒數
+    return max(delta / (365.25 * 24 * 3600), 0)  # 確保不會返回負數
 
 # from t=0 to t=short
 '''
@@ -46,8 +48,10 @@ total               (40-0) + (135-150)
 short calculate_time_to_maturity(T_short) 0 -
 long calculate_time_to_maturity(T_long) calculate_time_to_maturity(T_long - T_short) 0
 '''
-T_short = calculate_time_to_maturity("2025-02-03T13:30")
-T_long = calculate_time_to_maturity("2025-02-05T13:30")
+
+# 計算時間間隔
+T_short = calculate_time_to_maturity(datetime(2025, 2, 3, 13, 30))
+T_long = calculate_time_to_maturity(datetime(2025, 2, 5, 13, 30))
 
 # 初始成本計算
 short_call_initial = [black_scholes(S, K, T_short, r, sigma, option_type="call") for S in S_range]
