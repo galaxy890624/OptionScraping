@@ -74,7 +74,7 @@ profits = [long_value - short_value - cost for long_value, short_value, cost in 
 plt.figure(figsize=(10, 6))
 plt.plot(S_range, profits, label="Time Spread Profit")
 plt.axhline(0, color="black", linestyle="--", linewidth=1)
-plt.title("Time Spread Strategy Profit/Loss")
+plt.title(f"Time Spread Strategy Profit/Loss (Updated at {datetime.now().strftime('%Y-%m-%d %H:%M:%S')})")
 plt.xlabel("Underlying Price (S)")
 plt.ylabel("Profit/Loss")
 plt.legend()
@@ -82,6 +82,6 @@ plt.grid()
 
 # 標註重要價格點
 plt.axvline(K, color="red", linestyle="--", label=f"Strike Price (K = {K})")
-plt.text(K, max(profits) * 0.5, "K=24000", color="red", horizontalalignment='right')
+plt.text(K, max(profits) * 0.5, f"K = {K}", color="red", horizontalalignment='right')
 
 plt.show()
