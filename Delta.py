@@ -1,6 +1,7 @@
 # 套件匯入
 import requests as r
 import pandas as pd
+import json
 from math import log, sqrt, exp # log 是以e為底
 from scipy.stats import norm
 from datetime import datetime, time, timedelta
@@ -148,13 +149,17 @@ def get_spot_price_taifex():
 spot_price = get_spot_price_taifex() # 如果沒有資料 會回傳錯誤訊息
 print(f"台指期近月價格: {spot_price}")
 
+# 從 JSON 文件中讀取到期日
+with open("ExpirationDate.json", "r", encoding="utf-8") as file:
+    expiration_data = json.load(file)
+    expiration_date = datetime.fromisoformat(expiration_data["expiration_date"])
+
 # time_to_maturity_days 計算
 def calculate_days_to_maturity(expiration_date):
     today = datetime.now()
     dt = expiration_date - today
     return max((dt.total_seconds()) / (24*60*60), 0)  # 確保剩餘天數不為負 且 資料型態type 為 float
 
-expiration_date = datetime(2025, 2, 3, 13, 30) # 到期日 手動修改
 time_to_maturity_days = calculate_days_to_maturity(expiration_date)
 time_to_maturity = time_to_maturity_days / 365
 

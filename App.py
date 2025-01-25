@@ -1,3 +1,4 @@
+import json
 from flask import Flask, jsonify, request, render_template
 from flask_cors import CORS
 from Delta import fetch_options_data, get_spot_price_taifex, calculate_delta, calculate_gamma, calculate_theta, calculate_vega, current_time, datetime, spot_price, calculate_days_to_maturity, volatility
@@ -5,10 +6,14 @@ from Delta import fetch_options_data, get_spot_price_taifex, calculate_delta, ca
 app = Flask(__name__)
 CORS(app)
 
+# 從 JSON 文件中讀取到期日
+with open("ExpirationDate.json", "r", encoding="utf-8") as file:
+    expiration_data = json.load(file)
+    expiration_date = datetime.fromisoformat(expiration_data["expiration_date"])
+
 # 首頁路由，渲染模板
 @app.route('/Index') # http://127.0.0.1:5000/Index
 def home():
-    expiration_date = datetime(2025, 2, 3, 13, 30) # 到期日 手動修改
     current_time = datetime.now().strftime("%Y/%m/%d %H:%M:%S")  # 格式化當前時間
     return render_template('Index.html', current_time=current_time, expiration_date=expiration_date.strftime("%Y-%m-%d %H:%M:%S"))
 
@@ -24,7 +29,6 @@ def get_options():
 
         # 計算 Delta
         risk_free_rate = 0.02  # 無風險利率
-        expiration_date = datetime(2025, 2, 3, 13, 30) # 到期日 手動修改
         time_to_maturity_days = calculate_days_to_maturity(expiration_date)
         time_to_maturity = time_to_maturity_days / 365
 
@@ -104,7 +108,6 @@ def get_spot_price():
 @app.route('/api/time_to_maturity', methods=['GET'])
 def get_time_to_maturity():
     try:
-        expiration_date = datetime(2025, 2, 3, 13, 30) # 到期日 手動修改
         time_to_maturity_days = calculate_days_to_maturity(expiration_date)
         return jsonify({"time_to_maturity_days": time_to_maturity_days})
     except Exception as e:
