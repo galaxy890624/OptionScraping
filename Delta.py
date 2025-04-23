@@ -80,9 +80,9 @@ def convert_to_custom_timestamp(row):
     system_time = datetime.now().time() # 格式 = 03:58:47.445722
 
     # 基於 system_time 判斷交易日期
-    if system_time >= time(13, 45):  # 下午盤後交易
+    if system_time >= time(15, 0):  # 下午盤後交易
         trade_date = get_last_trading_day(system_today.date())
-    elif system_time <= time(8, 45):  # 凌晨盤後交易
+    elif system_time <= time(8, 30):  # 凌晨盤後交易
         trade_date = get_last_trading_day((system_today - timedelta(days=1)).date())
     else:  # 日間交易
         trade_date = system_today.date()
@@ -93,14 +93,14 @@ def convert_to_custom_timestamp(row):
     return formatted_str # Y/MM/DD hh:mm:ss
 
 # 爬取 台指選擇權資料 的函數
-def fetch_options_data():
+def fetch_options_data(market_type="0"):
     url = "https://mis.taifex.com.tw/futures/api/getQuoteListOption"
     payload = {
-        "MarketType": "0",
+        "MarketType": market_type,
         "SymbolType": "O",
         "KindID": "1",
         "CID": "TXO",
-        "ExpireMonth": "202503W4",  # 替換為你需要的到期月份 格式 = 202406W4(for週選); 202407(for月選)
+        "ExpireMonth": "202504W5",  # 替換為你需要的到期月份 格式 = 202406W4(for週選); 202407(for月選)
         "RowSize": "全部",
         "PageNo": "",
         "SortColumn": "",
@@ -121,9 +121,9 @@ def fetch_options_data():
     return df
 
 # spot_price 爬取台指期的資料
-def get_spot_price_taifex():
+def get_spot_price_taifex(market_type="0"):
     url = "https://mis.taifex.com.tw/futures/api/getQuoteList"
-    payload = {"MarketType":"0",
+    payload = {"MarketType": market_type,
            "SymbolType":"F",
            "KindID":"1",
            "CID":"TXF",
@@ -183,21 +183,31 @@ print(f"台指選波動率: {volatility}")
 
 # 主程式
 def main():
-    # 參數設定
-    #spot_price = 22277  # 當前現貨價格 (替換為動態價格爬取)
-    risk_free_rate = 0.02  # 無風險利率 2% (通常是國債利率)
+    # 根據當前時間自動判斷盤別
+    now = datetime.now()
+    now_time = now.time()
+    if time(8, 30, 0) <= now_time < time(15, 0, 0):
+        session_type = "0"  # 日盤
+    else:
+        # 15:00:00 ~ 23:59:59 或 00:00:00 ~ 05:00:00
+        if now_time >= time(15, 0, 0) or now_time < time(5, 0, 0):
+            session_type = "1"  # 夜盤
+        else:
+            session_type = "0"  # 其他時間預設日盤
+
+    risk_free_rate = 0.02  # 無風險利率 2%
     # volatility = 0.25  # 波動率 25%
     #time_to_maturity_days = 7  # 到期日剩餘天數（7天）
     #time_to_maturity = time_to_maturity_days / 365  # 轉換為年
 
     # 爬取台指期現貨價格
-    spot_price = get_spot_price_taifex()
+    spot_price = get_spot_price_taifex(market_type=session_type)
     if spot_price is None:
         print("Error: Unable to retrieve spot price. Exiting program.")
         return  # 停止執行或根據需要進行其他處理
     
     # 爬取選擇權數據
-    df = fetch_options_data()
+    df = fetch_options_data(market_type=session_type)
 
     # 確保 df 不為空
     if df.empty:
