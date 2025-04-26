@@ -29,10 +29,8 @@ def get_options():
         if time(8, 30, 0) <= now_time < time(15, 0, 0):
             session_type = "0"  # 日盤
         else:
-            if now_time >= time(15, 0, 0) or now_time < time(5, 0, 0):
-                session_type = "1"  # 夜盤
-            else:
-                session_type = "0"
+            # 15:00:00 ~ 23:59:59 或 00:00:00 ~ 08:29:59
+            session_type = "1"  # 夜盤
 
         # 爬取選擇權數據
         df = fetch_options_data(market_type=session_type)
@@ -131,10 +129,7 @@ def get_spot_price():
         if time(8, 30, 0) <= now_time < time(15, 0, 0):
             session_type = "0"
         else:
-            if now_time >= time(15, 0, 0) or now_time < time(5, 0, 0):
-                session_type = "1"
-            else:
-                session_type = "0"
+            session_type = "1"
         spot_price = get_spot_price_taifex(market_type=session_type)
         return jsonify({"spot_price": spot_price})
     except Exception as e:
